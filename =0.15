@@ -1,0 +1,6 @@
+Collecting ruamel.yaml
+  Downloading ruamel.yaml-0.18.6-py3-none-any.whl (117 kB)
+Collecting ruamel.yaml.clib>=0.2.7; platform_python_implementation == "CPython" and python_version < "3.13"
+  Downloading ruamel.yaml.clib-0.2.8-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.whl (596 kB)
+Installing collected packages: ruamel.yaml.clib, ruamel.yaml
+Successfully installed ruamel.yaml-0.18.6 ruamel.yaml.clib-0.2.8

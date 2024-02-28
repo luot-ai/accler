@@ -44,10 +44,10 @@ class HelloObject : public SimObject
     /**
      * Example function to execute on an event trigger
      */
-    void processEvent();
+    void processEvent();//当某事件触发时，希望执行的函数
 
     /// An event that wraps the above function
-    EventFunctionWrapper event;
+    EventFunctionWrapper event;//包裹上面的函数
 
     /// Pointer to the corresponding GoodbyeObject. Set via Python
     GoodbyeObject* goodbye;

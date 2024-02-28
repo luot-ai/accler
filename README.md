@@ -1,99 +1,105 @@
-# The gem5 Simulator
+# Konata
 
-This is the repository for the gem5 simulator. It contains the full source code
-for the simulator and all tests and regressions.
+* Konata is an instruction pipeline visualizer for Onikiri2-Kanata/Gem5-O3PipeView formats.
+* ASPLOS 2018 learning gem5 tutorial presentation is [here](https://github.com/shioyadan/Konata/wiki/gem5-konata.pdf
+)
+* The Onikiri2-Kanata format is described in [here](docs/kanata-log-format.md). It can represent a more detailed pipeline behavior than Gem5-O3PipeView.
 
-The gem5 simulator is a modular platform for computer-system architecture
-research, encompassing system-level architecture as well as processor
-microarchitecture. It is primarily used to evaluate new hardware designs,
-system software changes, and compile-time and run-time system optimizations.
+![demo](https://github.com/shioyadan/Konata/wiki/images/konata.gif)
 
-The main website can be found at <http://www.gem5.org>.
 
-## Testing status
+## Installation
 
-**Note**: These regard tests run on the develop branch of gem5:
-<https://github.com/gem5/gem5/tree/develop>.
+There are two ways to launch Konata.
+If you fail to launch a pre-built binary, please try the second way.
 
-[![Daily Tests](https://github.com/gem5/gem5/actions/workflows/daily-tests.yaml/badge.svg)](https://github.com/gem5/gem5/actions/workflows/daily-tests.yaml)
-[![Weekly Tests](https://github.com/gem5/gem5/actions/workflows/weekly-tests.yaml/badge.svg)](https://github.com/gem5/gem5/actions/workflows/weekly-tests.yaml)
-[![Compiler Tests](https://github.com/gem5/gem5/actions/workflows/compiler-tests.yaml/badge.svg)](https://github.com/gem5/gem5/actions/workflows/compiler-tests.yaml)
+1. Extract an archive and launch an executable file (konata.exe or konata).
+    * Pre-built binaries are available from [here](https://github.com/shioyadan/Konata/releases).
+2. Launch from this repository.
+    1. Install node.js from https://nodejs.org
+    2. Clone this repository.
+    3. Launch install.bat (Windows) or install.sh (Linux/MacOS).
+    4. Launch Konata from konata.vbs (Windows) or konata.sh (Linux/MacOS).
 
-## Getting started
 
-A good starting point is <http://www.gem5.org/about>, and for
-more information about building the simulator and getting started
-please see <http://www.gem5.org/documentation> and
-<http://www.gem5.org/documentation/learning_gem5/introduction>.
+## Usage
 
-## Building gem5
+### Basic
 
-To build gem5, you will need the following software: g++ or clang,
-Python (gem5 links in the Python interpreter), SCons, zlib, m4, and lastly
-protobuf if you want trace capture and playback support. Please see
-<http://www.gem5.org/documentation/general_docs/building> for more details
-concerning the minimum versions of these tools.
+1. Generate a trace log from gem5 with the O3 CPU model
+    * Execute gem5 with the following flags
+    * This example is from http://www.m5sim.org/Visualization
+    ```
+    $ ./build/ARM/gem5.opt \
+        --debug-flags=O3PipeView \
+        --debug-start=<first tick of interest> \
+        --debug-file=trace.out \
+        configs/example/se.py \
+        --cpu-type=detailed \
+        --caches -c <path to binary> \
+        -m <last cycle of interest>
+    ```
+2. Load a generated "trace.out" to Konata
+    * from a menu in a window or using drag&drop
+3. If you use ```O3CPUAll``` as well as ```O3PipeView``` as follows, Konata shows more detailed CPU log and visualizes dependency between instructions.
+    ```
+    --debug-flags=O3PipeView,O3CPUAll
+    ```
 
-Once you have all dependencies resolved, execute
-`scons build/ALL/gem5.opt` to build an optimized version of the gem5 binary
-(`gem5.opt`) containing all gem5 ISAs. If you only wish to compile gem5 to
-include a single ISA, you can replace `ALL` with the name of the ISA. Valid
-options include `ARM`, `NULL`, `MIPS`, `POWER`, `RISCV`, `SPARC`, and `X86`
-The complete list of options can be found in the build_opts directory.
+### Keyboard
 
-See https://www.gem5.org/documentation/general_docs/building for more
-information on building gem5.
+* mouse wheel up, key up: scroll up
+* mouse wheel down, key down: scroll down
+* ctrl + mouse wheel up, key "+", ctrl+key up: zoom in
+* ctrl + mouse wheel down, key "-", ctrl+key down: zoom out
+* ctrl + f, F3, shift+F3: find a string
+* F1, ctrl+shift+p: open a command palette
 
-## The Source Tree
+### Tips
 
-The main source tree includes these subdirectories:
+* If you miss pipelines in a right pane, you can move to pipelines by click "Adjust position" in a right-click menu.
+* You can visually compare two traces as follows:
+    1. Load two trace files
+    2. Right-click and select "Synchronized school" & "Transparent mode"
+    3. Right-click and select a color scheme
+    4. Move to another tab and adjust a position with the transparent mode
+* If you cannot launch Konata, try to install the following runtimes (or try to install the latest Google Chrome, because it uses the same runtimes).
+    ```
+    sudo apt install \
+        libgconf2-4
+        libgtk-3-0 \
+        libxss1 \
+        libgconf2-4 \
+        libnss3 \
+        libasound2 \
+        libX11-xcb1 \
+        libcanberra-gtk3-module
+    ```
+* In ```O3CPUAll``` mode, Konata associates each line in trace.out with each instruction by tracking ```[sn:<serial number>]```. If you output custom log with the above serial information, Konata shows your custom log.
 
-* build_opts: pre-made default configurations for gem5
-* build_tools: tools used internally by gem5's build process.
-* configs: example simulation configuration scripts
-* ext: less-common external packages needed to build gem5
-* include: include files for use in other programs
-* site_scons: modular components of the build system
-* src: source code of the gem5 simulator. The C++ source, Python wrappers, and Python standard library are found in this directory.
-* system: source for some optional system software for simulated systems
-* tests: regression tests
-* util: useful utility programs and files
 
-## gem5 Resources
+## Development
 
-To run full-system simulations, you may need compiled system firmware, kernel
-binaries and one or more disk images, depending on gem5's configuration and
-what type of workload you're trying to run. Many of these resources can be
-obtained from <https://resources.gem5.org>.
+* Install dependent runtimes as follows or use Dockerfile included in a source tree
+    ```
+    # Install node.js/npm
+    sudo apt install nodejs
 
-More information on gem5 Resources can be found at
-<https://www.gem5.org/documentation/general_docs/gem5_resources/>.
+    # Install electron/electron-packager
+    # Since electron is huge, they are installed globally.
+    npm -g install electron
+    npm -g install electron-packager
 
-## Getting Help, Reporting bugs, and Requesting Features
+    # Run and build
+    make init   # Setup libraries
+    make        # Run Konata
+    make pack   # Build & pack Konata for Windows/Linux/Mac
+    ```
 
-We provide a variety of channels for users and developers to get help, report
-bugs, requests features, or engage in community discussions. Below
-are a few of the most common we recommend using.
+## License
 
-* **GitHub Discussions**: A GitHub Discussions page. This can be used to start
-discussions or ask questions. Available at
-<https://github.com/orgs/gem5/discussions>.
-* **GitHub Issues**: A GitHub Issues page for reporting bugs or requesting
-features. Available at <https://github.com/gem5/gem5/issues>.
-* **Jira Issue Tracker**: A Jira Issue Tracker for reporting bugs or requesting
-features. Available at <https://gem5.atlassian.net/>.
-* **Slack**: A Slack server with a variety of channels for the gem5 community
-to engage in a variety of discussions. Please visit
-<https://www.gem5.org/join-slack> to join.
-* **gem5-users@gem5.org**: A mailing list for users of gem5 to ask questions
-or start discussions. To join the mailing list please visit
-<https://www.gem5.org/mailing_lists>.
-* **gem5-dev@gem5.org**: A mailing list for developers of gem5 to ask questions
-or start discussions. To join the mailing list please visit
-<https://www.gem5.org/mailing_lists>.
+Copyright (C) 2016-2022 Ryota Shioya <shioya@ci.i.u-tokyo.ac.jp>
 
-## Contributing to gem5
-
-We hope you enjoy using gem5. When appropriate we advise charing your
-contributions to the project. <https://www.gem5.org/contributing> can help you
-get started. Additional information can be found in the CONTRIBUTING.md file.
+This application is released under the 3-Clause BSD License, see LICENSE.md.
+This application bundles ELECTRON and many third-party packages in accordance with
+the licenses presented in THIRD-PARTY-LICENSES.md.

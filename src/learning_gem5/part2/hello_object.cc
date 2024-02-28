@@ -39,14 +39,15 @@ HelloObject::HelloObject(const HelloObjectParams &params) :
     SimObject(params),
     // This is a C++ lambda. When the event is triggered, it will call the
     // processEvent() function. (this must be captured)
-    event([this]{ processEvent(); }, name() + ".event"),
+    event([this]{ processEvent(); }, name() + ".event"),//CONSTRUCTOR
     goodbye(params.goodbye_object),
     // Note: This is not needed as you can *always* reference this->name()
     myName(params.name),
     latency(params.time_to_wait),
     timesLeft(params.number_of_fires)
 {
-    DPRINTF(HelloExample, "Created the hello object\n");
+    DPRINTF(HelloExample, "Created the hello object,haha\n");
+    //:cppDPRINTF("Created the hello object\n");
     panic_if(!goodbye, "HelloObject must have a non-null GoodbyeObject");
 }
 

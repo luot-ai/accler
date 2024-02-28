@@ -29,8 +29,8 @@ from m5.SimObject import SimObject
 
 
 class HelloObject(SimObject):
-    type = "HelloObject"
-    cxx_header = "learning_gem5/part2/hello_object.hh"
+    type = "HelloObject"  # 这个type正是我用当前这个python类 所要包装的c++类
+    cxx_header = "learning_gem5/part2/hello_object.hh"  # c++类的声明
     cxx_class = "gem5::HelloObject"
 
     time_to_wait = Param.Latency("Time before firing the event")
