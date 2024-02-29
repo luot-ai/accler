@@ -51,6 +51,7 @@ BOOM_FLAGS="--cpu-type=RiscvO3CPU \
 --l2_assoc=4 \
 --mem-size=8GB \
 --warmup-insts=10000000 \
+-m 799159000 \
 -I 100000000000 "
 
 
@@ -59,6 +60,9 @@ BOOM_FLAGS="--cpu-type=RiscvO3CPU \
 #O3PipeView,O3CPUAll
 $GEM5_DIR/build/RISCV/gem5.opt \
 --outdir=$OUTPUT_DIR \
+--debug-flags=O3PipeView,O3CPUAll \
+--debug-file=trace.out \
+--debug-start=796361500 \
 $GEM5_DIR/configs/deprecated/example/dknet.py \
 $BOOM_FLAGS \
 --testbench=$TESTBENCH \
