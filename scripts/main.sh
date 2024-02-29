@@ -13,4 +13,3 @@ make EXEC=$main_program -j17
 ./obj_scripts.sh
 cd $SCRIPT_DIR
 ./run_darknet1.sh $main_program
-
