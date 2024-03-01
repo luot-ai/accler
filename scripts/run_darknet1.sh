@@ -11,7 +11,8 @@ WEIGHT_DIR=$DNET_DIR/weights
 RUN_DIR=$DNET_DIR
 OUTPUT_DIR=$DNET_DIR/output
 SCRIPT_OUT=$OUTPUT_DIR/runscript.log                                                                    # File log for this script's stdout henceforth
-TESTBENCH=$1
+RUNMODE=$1
+TESTBENCH=$2
 ################## REPORT SCRIPT CONFIGURATION ###################
 
 echo "Command line:"                                | tee $SCRIPT_OUT
@@ -36,6 +37,17 @@ echo "--------- Starting gem5! ------------" | tee -a $SCRIPT_OUT
 echo "" | tee -a $SCRIPT_OUT
 echo "" | tee -a $SCRIPT_OUT
 
+if [ "$RUNMODE" = "e" ]; then
+{
+    DEBUGFLAGS="Exec"
+    TRACEOUT="traceExe.out"
+}
+else
+{
+    DEBUGFLAGS="O3PipeView,O3CPUAll"
+    TRACEOUT="trace.out"
+}
+fi
 
 BOOM_FLAGS="--cpu-type=RiscvO3CPU \
 --bp-type=BiModeBP \
@@ -51,18 +63,17 @@ BOOM_FLAGS="--cpu-type=RiscvO3CPU \
 --l2_assoc=4 \
 --mem-size=8GB \
 --warmup-insts=10000000 \
--m 799159000 \
+-m 860789000 \
 -I 100000000000 "
-
 
 
 # Actually launch gem5!
 #O3PipeView,O3CPUAll
 $GEM5_DIR/build/RISCV/gem5.opt \
 --outdir=$OUTPUT_DIR \
---debug-flags=O3PipeView,O3CPUAll \
---debug-file=trace.out \
---debug-start=796361500 \
+--debug-flags=$DEBUGFLAGS \
+--debug-file=$TRACEOUT \
+--debug-start=850089000 \
 $GEM5_DIR/configs/deprecated/example/dknet.py \
 $BOOM_FLAGS \
 --testbench=$TESTBENCH \

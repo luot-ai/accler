@@ -11,7 +11,8 @@ WEIGHT_DIR=$DNET_DIR/weights
 RUN_DIR=$DNET_DIR
 OUTPUT_DIR=$DNET_DIR/output
 SCRIPT_OUT=$OUTPUT_DIR/runscript.log                                                                    # File log for this script's stdout henceforth
-TESTBENCH=$1
+RUNMODE=$1
+TESTBENCH=$2
 ################## REPORT SCRIPT CONFIGURATION ###################
 
 echo "Command line:"                                | tee $SCRIPT_OUT
