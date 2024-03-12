@@ -599,6 +599,7 @@ LSQUnit::executeLoad(const DynInstPtr &inst)
 
     load_fault = inst->initiateAcc();
 
+    //这里应该是后面那个条件没满足...，inst2commit没被执行
     if (load_fault == NoFault && !inst->readMemAccPredicate()) {
         assert(inst->readPredicate());
         inst->setExecuted();
@@ -647,7 +648,7 @@ LSQUnit::executeLoad(const DynInstPtr &inst)
 
             if (checkLoads)
                 return checkViolations(it, inst);
-        }
+        }//是的，正常执行的是这里！
     }
 
     return load_fault;

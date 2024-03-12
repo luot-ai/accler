@@ -102,7 +102,7 @@ CPU::CPU(const BaseO3CPUParams &params)
 
       isa(numThreads, NULL),
 
-      timeBuffer(params.backComSize, params.forwardComSize),
+      timeBuffer(params.backComSize, params.forwardComSize),  //size=b+f，type=struct
       fetchQueue(params.backComSize, params.forwardComSize),
       decodeQueue(params.backComSize, params.forwardComSize),
       renameQueue(params.backComSize, params.forwardComSize),
