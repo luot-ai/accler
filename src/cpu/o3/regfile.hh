@@ -71,6 +71,9 @@ class PhysRegFile
     using IdRange = std::pair<PhysIds::iterator,
                               PhysIds::iterator>;
   private:
+    /** custom register file. */
+    RegFile customRegFile;
+
     /** Integer register file. */
     RegFile intRegFile;
     std::vector<PhysRegId> intRegIds;
@@ -137,6 +140,11 @@ class PhysRegFile
      */
     unsigned numPhysicalCCRegs;
 
+    /**
+     * Number of physical Custom registers
+     */
+    unsigned numPhysicalCRegs;    
+
     /** Total number of physical registers. */
     unsigned totalNumRegs;
 
@@ -151,6 +159,7 @@ class PhysRegFile
                 unsigned _numPhysicalVecPredRegs,
                 unsigned _numPhysicalMatRegs,
                 unsigned _numPhysicalCCRegs,
+                unsigned _numPhysicalCRegs,
                 const BaseISA::RegClasses &classes);
 
     /**
@@ -257,6 +266,13 @@ class PhysRegFile
           default:
             panic("Unrecognized register class type %d.", type);
         }
+    }
+    
+    void 
+    setCReg(int idx,CRegVal val)
+    {
+      customRegFile.reg(idx)= val;
+      DPRINTF(IEW,"Custom regfile:setting custom register %i to %f,%f,%f,%f:\n",idx, val[0],val[1],val[2],val[3]);
     }
 
     void
