@@ -230,6 +230,7 @@ DebugFlag('VecRegs')
 DebugFlag('VecPredRegs')
 DebugFlag('MatRegs')
 DebugFlag('CCRegs')
+DebugFlag('CustomRegs')
 DebugFlag('MiscRegs')
 CompoundFlag('Registers', [ 'IntRegs', 'FloatRegs', 'VecRegs', 'VecPredRegs',
                             'MatRegs', 'CCRegs', 'MiscRegs' ])
