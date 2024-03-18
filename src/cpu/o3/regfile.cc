@@ -55,6 +55,7 @@ PhysRegFile::PhysRegFile(unsigned _numPhysicalIntRegs,
                          unsigned _numPhysicalVecPredRegs,
                          unsigned _numPhysicalMatRegs,
                          unsigned _numPhysicalCCRegs,
+                         unsigned _numPhysicalCRegs,
                          const BaseISA::RegClasses &reg_classes)
     : intRegFile(*reg_classes.at(IntRegClass), _numPhysicalIntRegs),
       floatRegFile(*reg_classes.at(FloatRegClass), _numPhysicalFloatRegs),
@@ -66,6 +67,7 @@ PhysRegFile::PhysRegFile(unsigned _numPhysicalIntRegs,
               _numPhysicalVecPredRegs),
       matRegFile(*reg_classes.at(MatRegClass), _numPhysicalMatRegs),
       ccRegFile(*reg_classes.at(CCRegClass), _numPhysicalCCRegs),
+      customRegFile(*reg_classes.at(CRegClass),_numPhysicalCRegs),
       numPhysicalIntRegs(_numPhysicalIntRegs),
       numPhysicalFloatRegs(_numPhysicalFloatRegs),
       numPhysicalVecRegs(_numPhysicalVecRegs),
@@ -75,13 +77,15 @@ PhysRegFile::PhysRegFile(unsigned _numPhysicalIntRegs,
       numPhysicalVecPredRegs(_numPhysicalVecPredRegs),
       numPhysicalMatRegs(_numPhysicalMatRegs),
       numPhysicalCCRegs(_numPhysicalCCRegs),
+      numPhysicalCRegs(_numPhysicalCRegs),
       totalNumRegs(_numPhysicalIntRegs
                    + _numPhysicalFloatRegs
                    + _numPhysicalVecRegs
                    + numPhysicalVecElemRegs
                    + _numPhysicalVecPredRegs
                    + _numPhysicalMatRegs
-                   + _numPhysicalCCRegs)
+                   + _numPhysicalCCRegs
+                   + _numPhysicalCRegs)
 {
     RegIndex phys_reg;
     RegIndex flat_reg_idx = 0;

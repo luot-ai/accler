@@ -172,6 +172,9 @@ const Addr MaxAddr = (Addr)-1;
 
 using RegVal = uint64_t;
 
+using CRegElemVal = float;
+using CRegVal = std::array <CRegElemVal,4>;
+
 // Logical register index type.
 using RegIndex = uint16_t;
 
