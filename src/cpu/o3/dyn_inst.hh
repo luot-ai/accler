@@ -1134,6 +1134,13 @@ class DynInst : public ExecContext, public RefCounted
         return cpu->getWritableReg(renamedDestIdx(idx), threadNumber);
     }
 
+    void 
+    setCRegOperand(const StaticInst *si, int idx, CRegVal val) override
+    {
+        cpu->setCReg(idx, val, threadNumber);
+        setResult(cRegClass, val);
+    }
+
     /** @todo: Make results into arrays so they can handle multiple dest
      *  registers.
      */

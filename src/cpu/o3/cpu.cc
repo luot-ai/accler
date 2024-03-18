@@ -92,6 +92,7 @@ CPU::CPU(const BaseO3CPUParams &params)
               params.numPhysVecPredRegs,
               params.numPhysMatRegs,
               params.numPhysCCRegs,
+              params.numPhysCRegs,
               params.isa[0]->regClasses()),
 
       freeList(name() + ".freelist", &regFile),
@@ -998,6 +999,12 @@ CPU::getWritableReg(PhysRegIdPtr phys_reg, ThreadID tid)
         break;
     }
     return regFile.getWritableReg(phys_reg);
+}
+
+void
+CPU::setCReg(int idx, CRegVal val, ThreadID tid)
+{
+    regFile.setCReg(idx, val);
 }
 
 void
