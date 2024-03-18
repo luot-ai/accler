@@ -266,6 +266,7 @@ ISA::ISA(const Params &p) : BaseISA(p),
     _regClasses.push_back(&vecPredRegClass);
     _regClasses.push_back(&matRegClass);
     _regClasses.push_back(&ccRegClass);
+    _regClasses.push_back(&cRegClass);
     _regClasses.push_back(&miscRegClass);
 
     fatal_if( p.vlen < p.elen,
