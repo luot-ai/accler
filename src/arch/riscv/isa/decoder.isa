@@ -765,7 +765,11 @@ decode QUADRANT default Unknown::unknown() {
                 }}, inst_flags=VectorIndexedLoadOp);
             }
         }
-
+        0x02: decode FUNCT7 {
+            0x0: VLoad::ld_tilerow({{
+            CVd_sf[i]=Mem_cc.as<float>()[i];
+        }});
+        }
         0x03: decode FUNCT3 {
             format FenceOp {
                 0x0: fence({{
