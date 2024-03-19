@@ -76,7 +76,7 @@ class ExecContext
     virtual void getRegOperand(const StaticInst *si, int idx, void *val) = 0;
     virtual void *getWritableRegOperand(const StaticInst *si, int idx) = 0;
     virtual void setRegOperand(const StaticInst *si, int idx, RegVal val) = 0;
-    virtual void setCRegOperand(const StaticInst *si, int idx, CRegVal val) = 0;
+    virtual void setCRegOperand(const StaticInst *si, RegIndex idx, CRegVal val) = 0;
     virtual void setRegOperand(const StaticInst *si, int idx,
             const void *val) = 0;
 

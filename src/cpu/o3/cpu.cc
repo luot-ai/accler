@@ -1002,7 +1002,7 @@ CPU::getWritableReg(PhysRegIdPtr phys_reg, ThreadID tid)
 }
 
 void
-CPU::setCReg(int idx, CRegVal val, ThreadID tid)
+CPU::setCReg(RegIndex idx, CRegVal val, ThreadID tid)
 {
     regFile.setCReg(idx, val);
 }

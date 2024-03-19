@@ -1135,7 +1135,7 @@ class DynInst : public ExecContext, public RefCounted
     }
 
     void 
-    setCRegOperand(const StaticInst *si, int idx, CRegVal val) override
+    setCRegOperand(const StaticInst *si, RegIndex idx, CRegVal val) override
     {
         cpu->setCReg(idx, val, threadNumber);
         setResult(cRegClass, val);

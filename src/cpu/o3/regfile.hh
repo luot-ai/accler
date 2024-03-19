@@ -269,7 +269,7 @@ class PhysRegFile
     }
     
     void 
-    setCReg(int idx,CRegVal val)
+    setCReg(RegIndex idx,CRegVal val)
     {
       customRegFile.reg(idx)= val;
       DPRINTF(IEW,"Custom regfile:setting custom register %i to %f,%f,%f,%f:\n",idx, val[0],val[1],val[2],val[3]);
