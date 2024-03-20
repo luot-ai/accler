@@ -62,7 +62,7 @@ def template LoadStoreConstructor {{
     }
 }};
 
-def template VLoadStoreConstructor {{
+def template VLoadConstructor {{
     %(class_name)s::%(class_name)s(ExtMachInst machInst):
         %(base_class)s("%(mnemonic)s", machInst, %(op_class)s)
     {
@@ -70,10 +70,20 @@ def template VLoadStoreConstructor {{
         setSrcRegIdx(_numSrcRegs++,((RS1)==0)?RegId():IntRegClass[RS1]);
         flags[IsInteger]=true;
         flags[IsFloating]=true;
-        flags[IsLoad]=true;;
+        flags[IsLoad]=true;
     }
 }};
-
+def template VStoreConstructor {{
+    %(class_name)s::%(class_name)s(ExtMachInst machInst):
+        %(base_class)s("%(mnemonic)s", machInst, %(op_class)s)
+    {
+        %(set_reg_idx_arr)s;
+        setSrcRegIdx(_numSrcRegs++,((RS1)==0)?RegId():IntRegClass[RS1]);
+        flags[IsInteger]=true;
+        flags[IsFloating]=true;
+        flags[IsStore]=true;
+    }
+}};
 let {{
 def LoadStoreBase(name, Name, offset_code, ea_code, memacc_code, mem_flags,
         inst_flags, base_class, postacc_code='', decode_template=BasicDecode,
@@ -128,13 +138,14 @@ def VLoadStoreBase(name, Name, offset_code,ea_code, memacc_code,idx_code, mem_fl
 
     # select templates
 
+    vconstructor = eval(exec_template_base + 'Constructor')
     fullExecTemplate = eval(exec_template_base + 'Execute')
     initiateAccTemplate = eval(exec_template_base + 'InitiateAcc')
     completeAccTemplate = eval(exec_template_base + 'CompleteAcc')
 
     # (header_output, decoder_output, decode_block, exec_output)
     return (LoadStoreDeclare.subst(iop),
-        VLoadStoreConstructor.subst(iop),
+        vconstructor.subst(iop),
         decode_template.subst(iop),
         fullExecTemplate.subst(iop) +
         initiateAccTemplate.subst(iop) +
@@ -210,7 +221,7 @@ Fault
     %(op_rd)s;
     %(ea_code)s;
 
-    uint32_t mem_size = 16;
+    uint32_t mem_size = sizeof(CRegVal);
 
     const std::vector<bool> byte_enable(mem_size, true);
     Fault fault = initiateMemRead(xc, EA, mem_size, memAccessFlags,
@@ -247,7 +258,8 @@ Fault
     CRegVal Mem = {};
     %(idx_code)s;
 
-    memcpy(Mem.data(), pkt->getPtr<CRegElemVal>(), sizeof(CRegElemVal) * 4);
+    getMemLE(pkt, Mem, traceData);
+    //memcpy(Mem.data(), pkt->getPtr<CRegElemVal>(), sizeof(CRegElemVal) * 4);
 
     xc->setCRegOperand(this,idx,Mem)
     return NoFault;
@@ -284,7 +296,14 @@ def template StoreExecute {{
         return NoFault;
     }
 }};
-
+def template VStoreExecute {{
+    Fault
+    %(class_name)s::execute(
+        ExecContext *xc, trace::InstRecord *traceData) const
+    {
+        return NoFault;
+    }
+}};
 def template StoreInitiateAcc {{
     Fault
     %(class_name)s::initiateAcc(ExecContext *xc,
@@ -313,8 +332,46 @@ def template StoreInitiateAcc {{
         return NoFault;
     }
 }};
+def template VStoreInitiateAcc {{
+
+Fault
+%(class_name)s::initiateAcc(ExecContext* xc,
+                            trace::InstRecord* traceData) const
+{
+    %(op_src_decl)s;
+    RegVal Mem={};
+    RegIndex idx;
+
+    %(op_rd)s;
+    %(idx_code)s;
+    Mem = xc->getCRegOperand(this,idx);
+
+    Addr EA;
+    %(ea_code)s;
+
+    if (!alignmentOk(xc, EA, sizeof(Mem))) {
+        return std::make_shared<AddressFault>(EA, STORE_ADDR_MISALIGNED);
+    }
+    {
+        Fault fault = writeMemTimingLE(xc, traceData, Mem, EA,
+            memAccessFlags, nullptr);
+        if (fault != NoFault)
+            return fault;
+    }
+    return NoFault;
+}
+}};
 
 def template StoreCompleteAcc {{
+    Fault
+    %(class_name)s::completeAcc(PacketPtr pkt, ExecContext *xc,
+        trace::InstRecord *traceData) const
+    {
+        return NoFault;
+    }
+}};
+
+def template VStoreCompleteAcc {{
     Fault
     %(class_name)s::completeAcc(PacketPtr pkt, ExecContext *xc,
         trace::InstRecord *traceData) const
@@ -399,6 +456,13 @@ def format Load(memacc_code, ea_code = {{EA = rvZext(Rs1 + offset);}},
     (header_output, decoder_output, decode_block, exec_output) = \
         LoadStoreBase(name, Name, offset_code, ea_code, memacc_code, mem_flags,
         inst_flags, 'Load', exec_template_base='Load')
+}};
+
+def format VStore(idx_code={{;}}, memacc_code={{;}}, ea_code = {{EA = rvZext(Rs1);}},
+        offset_code={{;}},mem_flags=[], inst_flags=[]) {{
+    (header_output, decoder_output, decode_block, exec_output) = \
+        VLoadStoreBase(name, Name, offset_code,ea_code, memacc_code,idx_code, mem_flags,
+        inst_flags, 'VStore', exec_template_base='VStore')
 }};
 
 def format Store(memacc_code, ea_code={{EA = rvZext(Rs1 + offset);}},
