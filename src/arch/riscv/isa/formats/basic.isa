@@ -70,6 +70,101 @@ def template BasicExecute {{
     }
 }};
 
+def template BasicVADeclare {{
+    //
+    // Static instruction class for "%(mnemonic)s".
+    //
+    class %(class_name)s : public %(base_class)s
+    {
+      private:
+        %(reg_idx_arr_decl)s;
+
+      public:
+        /// Constructor.
+        %(class_name)s(ExtMachInst machInst);
+        Fault execute(ExecContext *, trace::InstRecord *) const override;
+    };
+}};
+
+def template BasicVAConstructor {{
+    %(class_name)s::%(class_name)s(ExtMachInst machInst)
+        : %(base_class)s("%(mnemonic)s", machInst, %(op_class)s)
+    {
+        %(set_reg_idx_arr)s;
+        flags[IsFloating]= true;
+    }
+}};
+
+def template BasicVA2Execute {{
+    Fault
+    %(class_name)s::execute(ExecContext *xc,
+        trace::InstRecord *traceData) const
+    {
+        RegIndex idx1;
+        RegIndex idx2;
+        %(idx_code)s;
+
+        CRegVal CV_res1 ={};
+        CRegVal CV_res2 ={};
+        CRegVal CV_tmp1 ={};
+        CRegVal CV_tmp2 ={};
+        CRegVal CV_src1 ={};
+        CRegVal CV_src2 ={};
+        CRegVal CV_msrc1 ={};
+        CRegVal CV_msrc2 ={};
+
+        CV_src1 = xc->getCRegOperand(this,idx1);
+        CV_src2 = xc->getCRegOperand(this,idx2);
+        CV_msrc1 = xc->getCRegOperand(this,idx1+4);
+        CV_msrc2 = xc->getCRegOperand(this,idx2+4);
+        for (int i = 0; i < 4; i++) {
+            %(cal_code)s;
+        }
+
+        CV_res1[0]=(CV_tmp1[0]-CV_tmp1[2])*CV_msrc1[0];
+        CV_res1[1]=(CV_tmp1[1]+CV_tmp1[2])*CV_msrc1[1];
+        CV_res1[2]=(-CV_tmp1[1]+CV_tmp1[2])*CV_msrc1[2];
+        CV_res1[3]=(CV_tmp1[1]-CV_tmp1[3])*CV_msrc1[3];
+        
+        xc->setCRegOperand(this,idx1,CV_res1);
+        //if(idx1==1 && idx2==2){
+        //        CV_res2[0]=(CV_tmp2[0]-CV_tmp2[2])*CV_msrc2[0];
+        //        CV_res2[1]=(CV_tmp2[1]+CV_tmp2[2])*CV_msrc2[1];
+        //        CV_res2[2]=(-CV_tmp2[1]+CV_tmp2[2])*CV_msrc2[2];
+        //        CV_res2[3]=(CV_tmp2[1]-CV_tmp2[3])*CV_msrc2[3];
+        //    xc->setCRegOperand(this,idx2,CV_res2);
+        //}
+        return NoFault;
+    }
+}};
+
+def template BasicVA3Execute {{
+    Fault
+    %(class_name)s::execute(ExecContext *xc,
+        trace::InstRecord *traceData) const
+    {
+        RegIndex idx1;
+        RegIndex idx2;
+        RegIndex idx3;
+        %(idx_code)s;
+
+        CRegVal CV_res ={};
+        CRegVal CV_src1 ={};
+        CRegVal CV_src2 ={};
+        CRegVal CV_src3 ={};
+
+        CV_src1 = xc->getCRegOperand(this,idx1);
+        CV_src2 = xc->getCRegOperand(this,idx2);
+        CV_src3 = xc->getCRegOperand(this,idx3);
+
+        %(cal_code)s;
+        
+        xc->setCRegOperand(this,idx1,CV_res);
+        return NoFault;
+    }
+}};
+
+
 // Basic decode template.
 def template BasicDecode {{
     return new %(class_name)s(machInst);
