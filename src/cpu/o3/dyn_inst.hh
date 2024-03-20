@@ -1119,6 +1119,13 @@ class DynInst : public ExecContext, public RefCounted
         return cpu->getReg(reg, threadNumber);
     }
 
+    RegVal
+    getCRegOperand(const StaticInst *si, RegIndex idx) override
+    {
+        RegVal val = customRegFile.reg(idx);
+        return val;
+    }
+
     void
     getRegOperand(const StaticInst *si, int idx, void *val) override
     {
