@@ -119,6 +119,9 @@ class OpClass(Enum):
         "VectorMisc",
         "VectorIntegerExtension",
         "VectorConfig",
+        "AAMul",
+        "TriAdd",
+        "Oacc",
     ]
 
 

@@ -64,7 +64,7 @@ def template LoadStoreConstructor {{
 
 def template VLoadConstructor {{
     %(class_name)s::%(class_name)s(ExtMachInst machInst):
-        %(base_class)s("%(mnemonic)s", machInst, %(op_class)s)
+        %(base_class)s("%(mnemonic)s", machInst, FloatMemReadOp)
     {
         %(set_reg_idx_arr)s;
         setSrcRegIdx(_numSrcRegs++,((RS1)==0)?RegId():IntRegClass[RS1]);
@@ -75,7 +75,7 @@ def template VLoadConstructor {{
 }};
 def template VStoreConstructor {{
     %(class_name)s::%(class_name)s(ExtMachInst machInst):
-        %(base_class)s("%(mnemonic)s", machInst, %(op_class)s)
+        %(base_class)s("%(mnemonic)s", machInst, FloatMemWriteOp)
     {
         %(set_reg_idx_arr)s;
         setSrcRegIdx(_numSrcRegs++,((RS1)==0)?RegId():IntRegClass[RS1]);
@@ -222,7 +222,9 @@ Fault
     %(ea_code)s;
 
     uint32_t mem_size = sizeof(CRegVal);
-
+    if (!alignmentOk(xc, EA, mem_size)) {
+        return std::make_shared<AddressFault>(EA, LOAD_ADDR_MISALIGNED);
+    }
     const std::vector<bool> byte_enable(mem_size, true);
     Fault fault = initiateMemRead(xc, EA, mem_size, memAccessFlags,
                                   byte_enable);

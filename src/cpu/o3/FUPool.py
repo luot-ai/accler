@@ -61,4 +61,5 @@ class DefaultFUPool(FUPool):
         WritePort(),
         RdWrPort(),
         IprPort(),
+        CustomFu(),
     ]

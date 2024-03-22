@@ -134,7 +134,14 @@ class RdWrPort(FUDesc):
     ]
     count = 4
 
-
+class CustomFu(FUDesc):
+    opList = [
+        OpDesc(opClass="AAMul",opLat=7),
+        OpDesc(opClass="TriAdd",opLat=4),
+        OpDesc(opClass="Oacc",opLat=5)
+    ]
+    count = 1
+    
 class IprPort(FUDesc):
     opList = [OpDesc(opClass="IprAccess", opLat=3, pipelined=False)]
     count = 1
