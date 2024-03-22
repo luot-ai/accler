@@ -83,6 +83,7 @@ def template BasicVADeclare {{
         /// Constructor.
         %(class_name)s(ExtMachInst machInst);
         Fault execute(ExecContext *, trace::InstRecord *) const override;
+        using %(base_class)s::generateDisassembly;
     };
 }};
 

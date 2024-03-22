@@ -65,5 +65,24 @@ Store::generateDisassembly(Addr pc, const loader::SymbolTable *symtab) const
     return ss.str();
 }
 
+std::string
+VLoad::generateDisassembly(Addr pc, const loader::SymbolTable *symtab) const
+{
+    std::stringstream ss;
+    ss << mnemonic << ' '  << ", " <<
+        offset << '(' << registerName(srcRegIdx(0)) << ')';
+    return ss.str();
+}
+
+std::string
+VStore::generateDisassembly(Addr pc, const loader::SymbolTable *symtab) const
+{
+    std::stringstream ss;
+    ss << mnemonic << ' '  << ", " <<
+        offset << '(' << registerName(srcRegIdx(0)) << ')';
+    return ss.str();
+}
+
+
 } // namespace RiscvISA
 } // namespace gem5

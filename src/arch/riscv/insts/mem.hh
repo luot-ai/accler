@@ -71,6 +71,24 @@ class Store : public MemInst
         Addr pc, const loader::SymbolTable *symtab) const override;
 };
 
+class VLoad : public MemInst
+{
+  protected:
+    using MemInst::MemInst;
+
+    std::string generateDisassembly(
+        Addr pc, const loader::SymbolTable *symtab) const override;
+};
+
+class VStore : public MemInst
+{
+  protected:
+    using MemInst::MemInst;
+
+    std::string generateDisassembly(
+        Addr pc, const loader::SymbolTable *symtab) const override;
+};
+
 } // namespace RiscvISA
 } // namespace gem5
 

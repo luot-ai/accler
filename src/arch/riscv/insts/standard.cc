@@ -58,6 +58,22 @@ RegOp::generateDisassembly(Addr pc, const loader::SymbolTable *symtab) const
 }
 
 std::string
+Varith2::generateDisassembly(Addr pc, const loader::SymbolTable *symtab) const
+{
+    std::stringstream ss;
+    ss << mnemonic << ' ' ;
+    return ss.str();
+}
+
+std::string
+Varith3::generateDisassembly(Addr pc, const loader::SymbolTable *symtab) const
+{
+    std::stringstream ss;
+    ss << mnemonic << ' ' ;
+    return ss.str();
+}
+
+std::string
 CSROp::generateDisassembly(Addr pc, const loader::SymbolTable *symtab) const
 {
     std::stringstream ss;
