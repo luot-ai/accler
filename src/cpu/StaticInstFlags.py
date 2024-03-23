@@ -99,4 +99,13 @@ class StaticInstFlags(Enum):
         "IsHtmStart",  # Starts a HTM transaction
         "IsHtmStop",  # Stops (commits) a HTM transaction
         "IsHtmCancel",  # Explicitely aborts a HTM transaction
+        "IsAAMul02",
+        "IsAAMul12",
+        "IsAAMul21",
+        "IsAAMul31",
+        "IsTriAdd012",
+        "IsTriAdd321",
+        "IsOacc",
+        "IsVLoad",
+        "IsVStore",
     ]

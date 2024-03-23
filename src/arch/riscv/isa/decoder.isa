@@ -773,20 +773,20 @@ decode QUADRANT default Unknown::unknown() {
                 format Varith2{
                     0x1: aamul02 ({{idx1 = 0;idx2 = 2;}},{{
                         CV_tmp1[i]=CV_src1[i]-CV_src2[i];
-                    }},inst_flags=AAMulOp);
+                    }},AAMulOp,IsAAMul02);
                     0x2: aamul12({{idx1 = 1;idx2 = 2;}},{{
                         CV_tmp1[i]=CV_src1[i]+CV_src2[i];
-                    }},inst_flags=AAMulOp);
+                    }},AAMulOp,IsAAMul12);
                     0x3: aamul21({{idx1 = 2;idx2 = 1;}},{{
                         CV_tmp1[i]=CV_src1[i]-CV_src2[i];
-                    }},inst_flags=AAMulOp);
+                    }},AAMulOp,IsAAMul21);
                     0x4: aamul13({{idx1 = 3;idx2 = 1;}},{{
                         CV_tmp1[i]=-CV_src1[i]+CV_src2[i];
-                    }},inst_flags=AAMulOp);
+                    }},AAMulOp,IsAAMul31);
                     0x5: aamul1221({{idx1 = 1;idx2 = 2;}},{{
                         CV_tmp1[i]=CV_src1[i]+CV_src2[i];
                         CV_tmp2[i]=-CV_src1[i]+CV_src2[i];
-                    }},inst_flags=AAMulOp);
+                    }},AAMulOp,IsAAMul02);
                 }
             }
             0x2: decode RD {
@@ -795,12 +795,12 @@ decode QUADRANT default Unknown::unknown() {
                         for (int i = 0; i < 4; i++) {
                             CV_res[i]=CV_src1[i]+CV_src2[i]+CV_src3[i];
                         }
-                    }},inst_flags=TriAddOp);
+                    }},TriAddOp,IsTriAdd012);
                     0x2: triadd123({{idx1 = 3;idx2 = 2;idx3=1;}},{{
                         for (int i = 0; i < 4; i++) {
                             CV_res[i]=-CV_src1[i]-CV_src2[i]+CV_src3[i];
                         }
-                    }},inst_flags=TriAddOp);
+                    }},TriAddOp,IsTriAdd321);
                 }
             }
             0x3: Varith3::oacc({{idx1 = 8;idx2 = 0;idx3=3;}},{{
@@ -808,7 +808,7 @@ decode QUADRANT default Unknown::unknown() {
                 CV_res[2] = CV_src1[2]+(CV_src3[0] + CV_src3[1] + CV_src3[2]);
                 CV_res[1] = CV_src1[1]+(CV_src2[1] - CV_src2[2] - CV_src2[3]);
                 CV_res[3] = CV_src1[3]+(CV_src3[1] - CV_src3[2] - CV_src3[3]);
-                    }},inst_flags=OaccOp);    
+                    }},OaccOp,IsOacc);    
             0x4: VStore::wb_tile({{
                 idx =(RegIndex)sext<5>(RD);
             }});      

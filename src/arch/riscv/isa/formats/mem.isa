@@ -71,6 +71,7 @@ def template VLoadConstructor {{
         flags[IsInteger]=true;
         flags[IsFloating]=true;
         flags[IsLoad]=true;
+        flags[IsVLoad]=true;
     }
 }};
 def template VStoreConstructor {{
@@ -82,8 +83,10 @@ def template VStoreConstructor {{
         flags[IsInteger]=true;
         flags[IsFloating]=true;
         flags[IsStore]=true;
+        flags[IsVStore]=true;
     }
 }};
+
 let {{
 def LoadStoreBase(name, Name, offset_code, ea_code, memacc_code, mem_flags,
         inst_flags, base_class, postacc_code='', decode_template=BasicDecode,

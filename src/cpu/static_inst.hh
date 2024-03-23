@@ -144,6 +144,19 @@ class StaticInst : public RefCounted, public StaticInstFlags
     {
         return flags[IsLoad] || flags[IsStore] || flags[IsAtomic];
     }
+    bool isAAMul02()        const { return flags[IsAAMul02]; }  
+    bool isAAMul12()        const { return flags[IsAAMul12]; }
+    bool isAAMul21()        const { return flags[IsAAMul21]; }
+    bool isAAMul31()        const { return flags[IsAAMul31]; }
+    bool isTriAdd012()      const { return flags[IsTriAdd012]; }
+    bool isTriAdd321()      const { return flags[IsTriAdd321]; }
+    bool isOacc()           const { return flags[IsOacc]; }
+    bool isVLoad()          const { return flags[IsVLoad]; }
+    bool isVStore()         const { return flags[IsVStore]; }   
+    bool isAAMul()          const { return flags[IsAAMul02]||flags[IsAAMul12]||flags[IsAAMul21]||flags[IsAAMul31] ;}
+    bool isTriAdd()         cosnt { return flags[IsTriAdd012]||flags[IsTriAdd321] ;}
+    bool isCustom()         const { return isAAMul()||isTriAdd()||isOacc()||isVLoad()||isVStore() ;}   
+
     bool isLoad()         const { return flags[IsLoad]; }
     bool isStore()        const { return flags[IsStore]; }
     bool isAtomic()       const { return flags[IsAtomic]; }

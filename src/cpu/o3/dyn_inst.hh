@@ -537,6 +537,7 @@ class DynInst : public ExecContext, public RefCounted
     //  Instruction types.  Forward checks to StaticInst object.
     //
     bool isNop()          const { return staticInst->isNop(); }
+    bool isCustom()         const { return staticInst->isCustom(); }
     bool isMemRef()       const { return staticInst->isMemRef(); }
     bool isLoad()         const { return staticInst->isLoad(); }
     bool isStore()        const { return staticInst->isStore(); }

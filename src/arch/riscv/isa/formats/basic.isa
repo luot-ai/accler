@@ -92,7 +92,7 @@ def template BasicVAConstructor {{
         : %(base_class)s("%(mnemonic)s", machInst, %(op_class)s)
     {
         %(set_reg_idx_arr)s;
-        flags[IsFloating]= true;
+        %(constructor)s;
     }
 }};
 
