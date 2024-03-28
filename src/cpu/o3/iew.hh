@@ -51,6 +51,7 @@
 #include "cpu/o3/limits.hh"
 #include "cpu/o3/lsq.hh"
 #include "cpu/o3/scoreboard.hh"
+#include "cpu/o3/cuscon.hh"
 #include "cpu/timebuf.hh"
 #include "debug/IEW.hh"
 #include "sim/probe/probe.hh"
@@ -346,6 +347,7 @@ class IEW
      * CPU can deschedule itself if there is no activity.
      */
     bool wroteToTimeBuffer;
+    CustomControl cusCtrl;
 
     /** Debug function to print instructions that are issued this cycle. */
     void printAvailableInsts();
