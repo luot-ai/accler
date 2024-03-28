@@ -52,6 +52,7 @@
 #include "cpu/inst_seq.hh"
 #include "cpu/o3/comm.hh"
 #include "cpu/o3/dep_graph.hh"
+#include "cpu/o3/cuscon.hh"
 #include "cpu/o3/dyn_inst_ptr.hh"
 #include "cpu/o3/limits.hh"
 #include "cpu/o3/mem_dep_unit.hh"
@@ -403,6 +404,7 @@ class InstructionQueue
     void moveToYoungerInst(ListOrderIt age_order_it);
 
     DependencyGraph<DynInstPtr> dependGraph;
+    CustomControl cusCtrl;
 
     //////////////////////////////////////
     // Various parameters
