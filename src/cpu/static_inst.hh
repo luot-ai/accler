@@ -97,6 +97,8 @@ class StaticInst : public RefCounted, public StaticInstFlags
     /// See destRegIdx().
     RegIdArrayPtr _destRegIdxPtr = nullptr;
 
+    RegIndex _cDestIdx = 0;
+
   protected:
 
     /// Flag values for this instruction.
@@ -129,6 +131,8 @@ class StaticInst : public RefCounted, public StaticInstFlags
     {
         return _numTypedDestRegs[type];
     }
+    RegIndex
+    destCIdx() const { return _cDestIdx; }
     //@}
 
     /// @name Flag accessors.
@@ -147,14 +151,15 @@ class StaticInst : public RefCounted, public StaticInstFlags
     bool isAAMul02()        const { return flags[IsAAMul02]; }  
     bool isAAMul12()        const { return flags[IsAAMul12]; }
     bool isAAMul21()        const { return flags[IsAAMul21]; }
+    bool isAAMul1221()      const { return flags[IsAAMul1221]; }
     bool isAAMul31()        const { return flags[IsAAMul31]; }
     bool isTriAdd012()      const { return flags[IsTriAdd012]; }
     bool isTriAdd321()      const { return flags[IsTriAdd321]; }
     bool isOacc()           const { return flags[IsOacc]; }
     bool isVLoad()          const { return flags[IsVLoad]; }
     bool isVStore()         const { return flags[IsVStore]; }   
-    bool isAAMul()          const { return flags[IsAAMul02]||flags[IsAAMul12]||flags[IsAAMul21]||flags[IsAAMul31] ;}
-    bool isTriAdd()         cosnt { return flags[IsTriAdd012]||flags[IsTriAdd321] ;}
+    bool isAAMul()          const { return flags[IsAAMul1221]||flags[IsAAMul02]||flags[IsAAMul12]||flags[IsAAMul21]||flags[IsAAMul31] ;}
+    bool isTriAdd()         const { return flags[IsTriAdd012]||flags[IsTriAdd321] ;}
     bool isCustom()         const { return isAAMul()||isTriAdd()||isOacc()||isVLoad()||isVStore() ;}   
 
     bool isLoad()         const { return flags[IsLoad]; }
@@ -228,6 +233,12 @@ class StaticInst : public RefCounted, public StaticInstFlags
     /// Return logical index (architectural reg num) of i'th destination reg.
     /// Only the entries from 0 through numDestRegs()-1 are valid.
     const RegId &destRegIdx(int i) const { return (this->*_destRegIdxPtr)[i]; }
+
+    void 
+    setCDestIdx(RegIndex idx)
+    {
+        this->_cDestIdx = idx;
+    }
 
     void
     setDestRegIdx(int i, const RegId &val)

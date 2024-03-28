@@ -68,6 +68,7 @@ def template VLoadConstructor {{
     {
         %(set_reg_idx_arr)s;
         setSrcRegIdx(_numSrcRegs++,((RS1)==0)?RegId():IntRegClass[RS1]);
+        setCDestIdx((RegIndex)sext<5>(RD));
         flags[IsInteger]=true;
         flags[IsFloating]=true;
         flags[IsLoad]=true;
