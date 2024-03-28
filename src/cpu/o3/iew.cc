@@ -1367,8 +1367,12 @@ IEW::writebackInsts()
         // when it's ready to execute the strictly ordered load.
         if (!inst->isSquashed() && inst->isExecuted() &&
                 inst->getFault() == NoFault) {
-            int dependents = instQueue.wakeDependents(inst);
+            int dependents = instQueue.wakeDependents(inst);//memdepU：store；other：wakeupDest
+            int cusDependents = cusCtrl.doneInsts(inst);//完成指令，检查是否有指令可以就绪
+            DPRINTF(IEW,"custom instruction [sn:%lli] PC %s. done, %d dependents inst ready\n",
+                    inst->seqNum, inst->pcState(),cusDependents);
 
+            //custom不会运行这段
             for (int i = 0; i < inst->numDestRegs(); i++) {
                 // Mark register as ready if not pinned
                 if (inst->renamedDestIdx(i)->
