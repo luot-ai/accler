@@ -780,13 +780,13 @@ decode QUADRANT default Unknown::unknown() {
                     0x3: aamul21({{idx1 = 2;idx2 = 1;}},{{
                         CV_tmp1[i]=CV_src1[i]-CV_src2[i];
                     }},AAMulOp,IsAAMul21);
-                    0x4: aamul13({{idx1 = 3;idx2 = 1;}},{{
+                    0x4: aamul31({{idx1 = 3;idx2 = 1;}},{{
                         CV_tmp1[i]=-CV_src1[i]+CV_src2[i];
                     }},AAMulOp,IsAAMul31);
                     0x5: aamul1221({{idx1 = 1;idx2 = 2;}},{{
                         CV_tmp1[i]=CV_src1[i]+CV_src2[i];
                         CV_tmp2[i]=-CV_src1[i]+CV_src2[i];
-                    }},AAMulOp,IsAAMul02);
+                    }},AAMulOp,IsAAMul1221);
                 }
             }
             0x2: decode RD {
@@ -796,7 +796,7 @@ decode QUADRANT default Unknown::unknown() {
                             CV_res[i]=CV_src1[i]+CV_src2[i]+CV_src3[i];
                         }
                     }},TriAddOp,IsTriAdd012);
-                    0x2: triadd123({{idx1 = 3;idx2 = 2;idx3=1;}},{{
+                    0x2: triadd321({{idx1 = 3;idx2 = 2;idx3=1;}},{{
                         for (int i = 0; i < 4; i++) {
                             CV_res[i]=-CV_src1[i]-CV_src2[i]+CV_src3[i];
                         }
