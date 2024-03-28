@@ -219,7 +219,7 @@ MemDepUnit::insert(const DynInstPtr &inst)
         producing_stores.insert(std::end(producing_stores),
                                 std::begin(storeBarrierSNs),
                                 std::end(storeBarrierSNs));
-    } else {
+    } else if(!inst->isCustom){
         InstSeqNum dep = depPred.checkInst(inst->pcState().instAddr());
         if (dep != 0)
             producing_stores.push_back(dep);
@@ -285,9 +285,10 @@ MemDepUnit::insert(const DynInstPtr &inst)
     if (inst->isStore() || inst->isAtomic()) {
         DPRINTF(MemDepUnit, "Inserting store/atomic PC %s [sn:%lli].\n",
                 inst->pcState(), inst->seqNum);
-
+        if(!inst->isCustom){
         depPred.insertStore(inst->pcState().instAddr(), inst->seqNum,
-                inst->threadNumber);
+                inst->threadNumber);            
+        }
 
         ++stats.insertedStores;
     } else if (inst->isLoad()) {
@@ -463,7 +464,7 @@ MemDepUnit::wakeDependents(const DynInstPtr &inst)
         !inst->isWriteBarrier() && !inst->isHtmCmd()) {
         return;
     }
-
+    if (inst->isVStore) {return;}
     MemDepEntryPtr inst_entry = findInHash(inst);
 
     for (int i = 0; i < inst_entry->dependInsts.size(); ++i ) {
