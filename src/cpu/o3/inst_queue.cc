@@ -46,6 +46,7 @@
 
 #include "base/logging.hh"
 #include "cpu/o3/dyn_inst.hh"
+#include "cpu/o3/cuscon.hh"
 #include "cpu/o3/fu_pool.hh"
 #include "cpu/o3/limits.hh"
 #include "debug/IQ.hh"
@@ -583,14 +584,15 @@ InstructionQueue::insert(const DynInstPtr &new_inst)
 
     new_inst->setInIQ();
 
-    // Look through its source registers (physical regs), and mark any
-    // dependencies.
+    // Look through its source registers (physical regs), and mark any dependencies.
+    // 未就绪的指令会加入dependgraph，后续可能会被唤醒
     addToDependents(new_inst);
 
-    // Have this instruction set itself as the producer of its destination
-    // register(s).
+    // Have this instruction set itself as the producer of its destination register(s).
     addToProducers(new_inst);
 
+    //这里memref的指令稍微复杂一些，还要考虑访存预测，但是若就绪的话做的事情和普通指令其实是一致的
+    //出于简化代码的考虑，我们的custom也会加入，但在里面做了一些判断，并不会参与到相应的预测中
     if (new_inst->isMemRef()) {
         memDepUnit[new_inst->threadNumber].insert(new_inst);
     } else {
@@ -1001,6 +1003,8 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
         memDepUnit[tid].completeInst(completed_inst);
     }
 
+    //这里custom直接不执行咯
+    //load指令也是会执行这的，memdep的wakeup不是为load准备的
     for (int dest_reg_idx = 0;
          dest_reg_idx < completed_inst->numDestRegs();
          dest_reg_idx++)
@@ -1337,7 +1341,8 @@ InstructionQueue::addToDependents(const DynInstPtr &new_inst)
     // them to the dependency list if they are not ready.
     int8_t total_src_regs = new_inst->numSrcRegs();
     bool return_val = false;
-
+    bool iniAtmp = true;
+    //custom inst不会执行以下
     for (int src_reg_idx = 0;
          src_reg_idx < total_src_regs;
          src_reg_idx++)
@@ -1373,7 +1378,19 @@ InstructionQueue::addToDependents(const DynInstPtr &new_inst)
             }
         }
     }
-
+    //类似的操作：检查是否可发射，可则set，否则添入相应数据结构
+    if (iniAtmp && new_inst->isCustom)
+    {
+        if (cusCtrl.checkCanIss(new_inst))
+        {
+            new_inst->setCanIssue();
+            return_val = true;
+        }
+        else
+        {
+            cusCtrl.notRdyInstList[new_inst->threadNumber].push_back(new_inst);
+        }
+    }
     return return_val;
 }
 
