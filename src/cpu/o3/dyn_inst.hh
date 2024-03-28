@@ -537,7 +537,22 @@ class DynInst : public ExecContext, public RefCounted
     //  Instruction types.  Forward checks to StaticInst object.
     //
     bool isNop()          const { return staticInst->isNop(); }
+
+    bool isAAMul02()        const { return staticInst->isAAMul02(); }  
+    bool isAAMul12()        const { return staticInst->isAAMul12(); }
+    bool isAAMul21()        const { return staticInst->isAAMul21(); }
+    bool isAAMul31()        const { return staticInst->isAAMul31(); }
+    bool isAAMul1221()      const { return staticInst->isAAMul1221(); }
+    bool isTriAdd012()      const { return staticInst->isTriAdd012(); }
+    bool isTriAdd321()      const { return staticInst->isTriAdd321(); }
+
+    bool isOacc()           const { return staticInst->isOacc(); }
+    bool isVLoad()          const { return staticInst->isVLoad(); }
+    bool isVStore()         const { return staticInst->isVStore(); }   
+    bool isAAMul()          const { return staticInst->isAAMul(); }
+    bool isTriAdd()         const { return staticInst->isTriAdd(); }
     bool isCustom()         const { return staticInst->isCustom(); }
+
     bool isMemRef()       const { return staticInst->isMemRef(); }
     bool isLoad()         const { return staticInst->isLoad(); }
     bool isStore()        const { return staticInst->isStore(); }
@@ -667,7 +682,7 @@ class DynInst : public ExecContext, public RefCounted
 
     /** Returns the opclass of this instruction. */
     OpClass opClass() const { return staticInst->opClass(); }
-
+    RegIndex cDestIdx() const { return staticInst->destCIdx(); }
     /** Returns the branch target address. */
     std::unique_ptr<PCStateBase>
     branchTarget() const

@@ -103,6 +103,7 @@ class StaticInstFlags(Enum):
         "IsAAMul12",
         "IsAAMul21",
         "IsAAMul31",
+        "IsAAMul1221",
         "IsTriAdd012",
         "IsTriAdd321",
         "IsOacc",
