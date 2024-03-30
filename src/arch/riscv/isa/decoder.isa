@@ -765,11 +765,11 @@ decode QUADRANT default Unknown::unknown() {
                 }}, inst_flags=VectorIndexedLoadOp);
             }
         }
-        0x02: decode FUNCT7 {
+        0x02: decode FUNCT2 {
             0x0: VLoad::ld_tilerow({{
-                idx =(RegIndex)sext<5>(RD);
+                idx =(RegIndex)sext<5>(CVEC);
             }});
-            0x1: decode RD {
+            0x1: decode CVEC {
                 format Varith2{
                     0x1: aamul02 ({{idx1 = 0;idx2 = 2;}},{{
                         CV_tmp1[i]=CV_src1[i]-CV_src2[i];
@@ -789,7 +789,7 @@ decode QUADRANT default Unknown::unknown() {
                     }},AAMulOp,IsAAMul1221);
                 }
             }
-            0x2: decode RD {
+            0x2: decode CVEC {
                 format Varith3{
                     0x1: triadd012 ({{idx1 = 0;idx2 = 1;idx3=2;}},{{
                         for (int i = 0; i < 4; i++) {
@@ -801,16 +801,16 @@ decode QUADRANT default Unknown::unknown() {
                             CV_res[i]=-CV_src1[i]-CV_src2[i]+CV_src3[i];
                         }
                     }},TriAddOp,IsTriAdd321);
+                    0x3: oacc({{idx1 = 8;idx2 = 0;idx3=3;}},{{
+                        CV_res[0] = CV_src1[0]+(CV_src2[0] + CV_src2[1] + CV_src2[2]);
+                        CV_res[2] = CV_src1[2]+(CV_src3[0] + CV_src3[1] + CV_src3[2]);
+                        CV_res[1] = CV_src1[1]+(CV_src2[1] - CV_src2[2] - CV_src2[3]);
+                        CV_res[3] = CV_src1[3]+(CV_src3[1] - CV_src3[2] - CV_src3[3]);
+                    }},OaccOp,IsOacc);  
                 }
             }
-            0x3: Varith3::oacc({{idx1 = 8;idx2 = 0;idx3=3;}},{{
-                CV_res[0] = CV_src1[0]+(CV_src2[0] + CV_src2[1] + CV_src2[2]);
-                CV_res[2] = CV_src1[2]+(CV_src3[0] + CV_src3[1] + CV_src3[2]);
-                CV_res[1] = CV_src1[1]+(CV_src2[1] - CV_src2[2] - CV_src2[3]);
-                CV_res[3] = CV_src1[3]+(CV_src3[1] - CV_src3[2] - CV_src3[3]);
-                    }},OaccOp,IsOacc);    
             0x4: VStore::wb_tile({{
-                idx =(RegIndex)sext<5>(RD);
+                idx =(RegIndex)8;
             }});      
         }
         0x03: decode FUNCT3 {
