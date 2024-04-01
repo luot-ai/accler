@@ -450,7 +450,7 @@ def format Varith2(idx_code,cal_code,*opt_flags) {{
     decoder_output = BasicVAConstructor.subst(iop)
     decode_block = BasicDecode.subst(iop)
     exec_output = BasicVA2Execute.subst(iop)
-}}
+}};
 
 def format Varith3(idx_code,cal_code,*opt_flags) {{
     iop = InstObjParams(name, Name, 'Varith3', {'idx_code': idx_code, 'cal_code': cal_code}, opt_flags)
@@ -458,7 +458,7 @@ def format Varith3(idx_code,cal_code,*opt_flags) {{
     decoder_output = BasicVAConstructor.subst(iop)
     decode_block = BasicDecode.subst(iop)
     exec_output = BasicVA3Execute.subst(iop)
-}}
+}};
 
 def format ROp(code, *opt_flags) {{
     iop = InstObjParams(name, Name, 'RegOp', code, opt_flags)

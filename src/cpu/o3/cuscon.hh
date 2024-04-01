@@ -9,7 +9,7 @@
 #ifndef __CPU_O3_CUSCON_HH__
 #define __CPU_O3_CUSCON_HH__
 #include "cpu/o3/comm.hh"
-#include "cpu/o3/dyn_inst.hh"
+#include "cpu/o3/dyn_inst_ptr.hh"
 
 namespace gem5
 {
@@ -20,12 +20,11 @@ namespace o3
 class CustomControl
 {
     private:    
-        std::vector<int> controlVec(9);
-        std::vector<bool> busyVec(10);
-        std::vector<bool> ldBusyVec(9);
-        std::list<DynInstPtr> notRdyInstList[MaxThreads];
+        std::vector<int> controlVec;
+        std::vector<bool> busyVec;
+        std::vector<bool> ldBusyVec;
     public:
-        CustomControl();
+        CustomControl():controlVec(9), busyVec(10), ldBusyVec(9) {}
         ~CustomControl();
         int* getInfo(const DynInstPtr &inst);
         int  numOfIdx(int* info);
@@ -36,7 +35,8 @@ class CustomControl
         bool ckInfo(int* info);
         bool checkCanIss(const DynInstPtr &inst);
         int doneInsts(const DynInstPtr &completed_inst);
-}
+        std::list<DynInstPtr> notRdyInstList[MaxThreads];
+};
 
 } // namespace o3
 } // namespace gem5

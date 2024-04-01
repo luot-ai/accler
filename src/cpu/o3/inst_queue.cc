@@ -1379,7 +1379,7 @@ InstructionQueue::addToDependents(const DynInstPtr &new_inst)
         }
     }
     //类似的操作：检查是否可发射，可则set，否则添入相应数据结构
-    if (iniAtmp && new_inst->isCustom)
+    if (iniAtmp && new_inst->isCustom())
     {
         if (cusCtrl.checkCanIss(new_inst))
         {

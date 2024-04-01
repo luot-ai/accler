@@ -97,7 +97,7 @@ class StaticInst : public RefCounted, public StaticInstFlags
     /// See destRegIdx().
     RegIdArrayPtr _destRegIdxPtr = nullptr;
 
-    RegIndex _cDestIdx = 0;
+
 
   protected:
 
@@ -106,7 +106,7 @@ class StaticInst : public RefCounted, public StaticInstFlags
 
     /// See opClass().
     OpClass _opClass;
-
+    RegIndex _cDestIdx;
     /// See numSrcRegs().
     uint8_t _numSrcRegs = 0;
 
@@ -131,8 +131,6 @@ class StaticInst : public RefCounted, public StaticInstFlags
     {
         return _numTypedDestRegs[type];
     }
-    RegIndex
-    destCIdx() const { return _cDestIdx; }
     //@}
 
     /// @name Flag accessors.
@@ -228,7 +226,7 @@ class StaticInst : public RefCounted, public StaticInstFlags
 
     /// Operation class.  Used to select appropriate function unit in issue.
     OpClass opClass() const { return _opClass; }
-
+    RegIndex destCIdx() const { return _cDestIdx; }
 
     /// Return logical index (architectural reg num) of i'th destination reg.
     /// Only the entries from 0 through numDestRegs()-1 are valid.

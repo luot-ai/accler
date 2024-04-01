@@ -933,6 +933,12 @@ CPU::setMiscReg(int misc_reg, RegVal val, ThreadID tid)
     isa[tid]->setMiscReg(misc_reg, val);
 }
 
+CRegVal
+CPU::getCReg(RegIndex idx)
+{
+    return regFile.getCReg(idx);
+}
+
 RegVal
 CPU::getReg(PhysRegIdPtr phys_reg, ThreadID tid)
 {

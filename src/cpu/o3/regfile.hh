@@ -72,7 +72,7 @@ class PhysRegFile
                               PhysIds::iterator>;
   private:
     /** custom register file. */
-    RegFile customRegFile;
+    CRegFile customRegFile;
 
     /** Integer register file. */
     RegFile intRegFile;
@@ -176,6 +176,13 @@ class PhysRegFile
     /** Gets a misc register PhysRegIdPtr. */
     PhysRegIdPtr getMiscRegId(RegIndex reg_idx) {
         return &miscRegIds[reg_idx];
+    }
+
+    CRegVal
+    getCReg(RegIndex idx) 
+    {
+        CRegVal val = customRegFile.reg(idx);
+        return val;
     }
 
     RegVal
