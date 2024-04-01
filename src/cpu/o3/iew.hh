@@ -347,7 +347,6 @@ class IEW
      * CPU can deschedule itself if there is no activity.
      */
     bool wroteToTimeBuffer;
-    CustomControl cusCtrl;
 
     /** Debug function to print instructions that are issued this cycle. */
     void printAvailableInsts();

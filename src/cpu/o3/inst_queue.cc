@@ -968,8 +968,31 @@ int
 InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
 {
     int dependents = 0;
-
-    // The instruction queue here takes care of both floating and int ops
+    if (completed_inst->isCustom())
+    {
+        cusCtrl.doneInsts(completed_inst);
+           //wakeup
+        int tid = completed_inst->threadNumber;
+        for (auto it = cusCtrl.notRdyInstList[tid].begin(); it != cusCtrl.notRdyInstList[tid].end();) 
+        {
+            DynInstPtr inst = (*it);
+            bool canIss=cusCtrl.checkCanIss(inst);
+            if(canIss)
+            {
+                inst->setCanIssue();
+                addIfReady(inst);
+                it = cusCtrl.notRdyInstList[tid].erase(it);
+                dependents++;
+            }
+            else 
+            {
+                ++it; 
+            }
+        }
+    }
+    else
+    {
+// The instruction queue here takes care of both floating and int ops
     if (completed_inst->isFloating()) {
         iqIOStats.fpInstQueueWakeupAccesses++;
     } else if (completed_inst->isVector()) {
@@ -1065,6 +1088,7 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
         regScoreboard[dest_reg->flatIndex()] = true;
     }
     return dependents;
+    }
 }
 
 void

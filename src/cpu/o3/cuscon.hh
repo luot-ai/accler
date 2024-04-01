@@ -24,7 +24,7 @@ class CustomControl
         std::vector<bool> busyVec;
         std::vector<bool> ldBusyVec;
     public:
-        CustomControl():controlVec(9), busyVec(10), ldBusyVec(9) {}
+        CustomControl();
         ~CustomControl();
         int* getInfo(const DynInstPtr &inst);
         int  numOfIdx(int* info);
@@ -34,7 +34,7 @@ class CustomControl
         void setBusyVec(int instNum,int ldVecNum,bool setStatus);
         bool ckInfo(int* info);
         bool checkCanIss(const DynInstPtr &inst);
-        int doneInsts(const DynInstPtr &completed_inst);
+        void doneInsts(const DynInstPtr &completed_inst);
         std::list<DynInstPtr> notRdyInstList[MaxThreads];
 };
 

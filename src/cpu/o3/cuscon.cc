@@ -7,6 +7,8 @@
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 #include "cpu/o3/cuscon.hh"
+#include "cpu/o3/inst_queue.hh"
+#include "cpu/o3/dyn_inst.hh"
 
 //info索引
 #define ISVAL 0
@@ -48,8 +50,13 @@ namespace o3
 {
 
 CustomControl::CustomControl() 
-    : controlVec(TOTALVEC, 0), calBusyVec(TOTALIST, false) ,ldBusyVec(TOTALVEC, false)
-{ }
+    : controlVec(TOTALVEC, 0), busyVec(TOTALIST, false) ,ldBusyVec(TOTALVEC, false)
+{    
+    for (int i = 0; i < MaxThreads; ++i) 
+    {
+        notRdyInstList[i] = std::list<DynInstPtr>();
+    } 
+}
 
 CustomControl::~CustomControl() 
 {
@@ -68,30 +75,36 @@ int*
 CustomControl::getInfo(const DynInstPtr &inst)
 {
     //注意这里是按照vload去初始化的
-    int returnIdx[TOTALIDX]={EMPTY,LOADIN,VLOAD,TOTALVEC,TOTALVEC,TOTALVEC};
+    int* returnIdx = new int[TOTALIDX];
+    returnIdx[ISVAL] = EMPTY;
+    returnIdx[DONEVAL] = LOADIN;
+    returnIdx[IST] = VLOAD;
+    returnIdx[IDX1] = TOTALVEC;
+    returnIdx[IDX2] = TOTALVEC;
+    returnIdx[IDX3] = TOTALVEC;
     //VLOAD
-    if(inst->isVLoad){
+    if(inst->isVLoad()){
         RegIndex destIdx = inst->cDestIdx();
         returnIdx[IDX1]=destIdx;
     }
     //AAMul
-    else if (inst->isAAMul)
+    else if (inst->isAAMul())
     {
         returnIdx[ISVAL]=LOADIN;
         returnIdx[DONEVAL]=DONEAAMUL;
-        if (inst->isAAMul02)
+        if (inst->isAAMul02())
         {
             returnIdx[IST]=AAMUL02;
             returnIdx[IDX1]=0;
             returnIdx[IDX2]=2;
         }
-        else if (inst->isAAMul31)
+        else if (inst->isAAMul31())
         {
             returnIdx[IST]=AAMUL31;
             returnIdx[IDX1]=3;
             returnIdx[IDX2]=1;
         }    
-        else if (inst->isAAMul1221)
+        else if (inst->isAAMul1221())
         {
             returnIdx[IST]=AAMUL1221;
             returnIdx[IDX1]=1;
@@ -99,18 +112,18 @@ CustomControl::getInfo(const DynInstPtr &inst)
         }
     }
     //TriAdd OACC
-    else if (inst->isTriAdd)
+    else if (inst->isTriAdd())
     {
         returnIdx[ISVAL]=DONEAAMUL;
         returnIdx[DONEVAL]=DONETRIADD;
-        if (inst->isTriAdd012)
+        if (inst->isTriAdd012())
         {
             returnIdx[IST]=TRIADD012;
             returnIdx[IDX1]=0;
             returnIdx[IDX2]=1;
             returnIdx[IDX3]=2;
         }
-        else if (inst->isTriAdd321)
+        else if (inst->isTriAdd321())
         {
             returnIdx[IST]=TRIADD321;
             returnIdx[IDX1]=3;
@@ -118,7 +131,7 @@ CustomControl::getInfo(const DynInstPtr &inst)
             returnIdx[IDX3]=1;
         }
     }
-    else if (inst->isOacc)
+    else if (inst->isOacc())
     {
         returnIdx[ISVAL]=DONETRIADD;
         returnIdx[DONEVAL]=WBVAL;
@@ -128,7 +141,7 @@ CustomControl::getInfo(const DynInstPtr &inst)
         returnIdx[IDX3]=OUTVEC;
     }
     //VSTORE
-    else if (inst->isVStore)
+    else if (inst->isVStore())
     {
         returnIdx[ISVAL]=WBVAL;
         returnIdx[DONEVAL]=EMPTY;
@@ -206,7 +219,6 @@ CustomControl::ckInfo(int* info)
         }
     }
     //control
-    int i = IDX1;
     for (int i = IDX1; i < IDX1 + numOfIdx(info); i++)
     {
         int isval = info[ISVAL];
@@ -223,8 +235,9 @@ CustomControl::ckInfo(int* info)
 bool
 CustomControl::checkCanIss(const DynInstPtr &inst)
 {
-    assert(inst->isCustom);;
-    RegIndex* info = getInfo(inst);
+    assert(inst->isCustom());
+    int* info = getInfo(inst);
+    delete[] info;
     bool canIss = ckInfo(info);
     if(canIss)  setBusyVec(info[IST],info[IDX1],true);
     return canIss;
@@ -246,12 +259,12 @@ CustomControl::checkCanIss(const DynInstPtr &inst)
  * vstore其实也不会有事，因为已经完成了数据的复制
  * 访存违例也是不存在，store1->load1->load2
  */
-int 
+void
 CustomControl::doneInsts(const DynInstPtr &completed_inst)
 {
-    int dependents = 0;
-    assert(inst->isCustom);
-    RegIndex* info = getInfo(inst);
+    assert(completed_inst->isCustom());
+    int* info = getInfo(completed_inst);
+    delete[] info;
     setBusyVec(info[IST],info[IDX1],false);
     if(info[IST]==OACC)
     {
@@ -262,24 +275,6 @@ CustomControl::doneInsts(const DynInstPtr &completed_inst)
     {
         int doneVal = info[DONEVAL];
         for (int i = IDX1; i < IDX1 + numOfIdx(info); i++) setVal(info[i],doneVal);
-    }
-    //wakeup
-    int tid = completed_inst->threadNumber;
-    for (auto it = notRdyInstList[tid].begin(); it != notRdyInstList[tid].end();) 
-    {
-        DynInstPtr inst = (*it);
-        bool canIss=checkCanIss(inst);
-        if(canIss)
-        {
-            inst->setCanIssue();
-            addIfReady(inst);
-            it = myList.erase(it);
-            dependents++;
-        }
-        else 
-        {
-            ++it; 
-        }
     }
 }
 
