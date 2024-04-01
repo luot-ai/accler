@@ -221,7 +221,18 @@ class SimpleExecContext : public ExecContext
         (*execContextStats.numRegWrites[reg.classValue()])++;
         thread->setReg(reg, val);
     }
-
+    
+    CRegVal
+    getCRegOperand(const StaticInst *si, RegIndex idx) override
+    {
+        CRegVal val = {};//customRegFile.reg(idx);
+        return val;
+    }
+    void 
+    setCRegOperand(const StaticInst *si, RegIndex idx, CRegVal val) override
+    {
+        return;
+    }
     RegVal
     readMiscRegOperand(const StaticInst *si, int idx) override
     {

@@ -315,7 +315,7 @@ class CPU : public BaseCPU
     void *getWritableReg(PhysRegIdPtr phys_reg, ThreadID tid);
 
     void setReg(PhysRegIdPtr phys_reg, RegVal val, ThreadID tid);
-    void setCReg(int idx, CRegVal val, ThreadID tid);
+    void setCReg(RegIndex idx, CRegVal val, ThreadID tid);
     void setReg(PhysRegIdPtr phys_reg, const void *val, ThreadID tid);
 
     /** Architectural register accessors.  Looks up in the commit

@@ -142,7 +142,17 @@ class ExecContext : public gem5::ExecContext
             size, addr, flags, nullptr, std::move(amo_op),
             std::vector<bool>(size, true));
     }
-
+    CRegVal
+    getCRegOperand(const StaticInst *si, RegIndex idx) override
+    {
+        CRegVal val = {};//customRegFile.reg(idx);
+        return val;
+    }
+    void 
+    setCRegOperand(const StaticInst *si, RegIndex idx, CRegVal val) override
+    {
+        return;
+    }
     RegVal
     getRegOperand(const StaticInst *si, int idx) override
     {

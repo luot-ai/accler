@@ -1135,10 +1135,10 @@ class DynInst : public ExecContext, public RefCounted
         return cpu->getReg(reg, threadNumber);
     }
 
-    RegVal
+    CRegVal
     getCRegOperand(const StaticInst *si, RegIndex idx) override
     {
-        RegVal val = customRegFile.reg(idx);
+        CRegVal val = {};//customRegFile.reg(idx);
         return val;
     }
 
@@ -1161,7 +1161,7 @@ class DynInst : public ExecContext, public RefCounted
     setCRegOperand(const StaticInst *si, RegIndex idx, CRegVal val) override
     {
         cpu->setCReg(idx, val, threadNumber);
-        setResult(cRegClass, val);
+        //setResult(cRegClass, val);
     }
 
     /** @todo: Make results into arrays so they can handle multiple dest

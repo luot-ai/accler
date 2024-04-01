@@ -67,7 +67,7 @@ def template VLoadConstructor {{
         %(base_class)s("%(mnemonic)s", machInst, FloatMemReadOp)
     {
         %(set_reg_idx_arr)s;
-        setSrcRegIdx(_numSrcRegs++,((RS1)==0)?RegId():IntRegClass[RS1]);
+        setSrcRegIdx(_numSrcRegs++, ((RS1) == 0) ? RegId() : intRegClass[RS1]);
         setCDestIdx((RegIndex)sext<5>(RD));
         flags[IsInteger]=true;
         flags[IsFloating]=true;
@@ -80,7 +80,7 @@ def template VStoreConstructor {{
         %(base_class)s("%(mnemonic)s", machInst, FloatMemWriteOp)
     {
         %(set_reg_idx_arr)s;
-        setSrcRegIdx(_numSrcRegs++,((RS1)==0)?RegId():IntRegClass[RS1]);
+        setSrcRegIdx(_numSrcRegs++, ((RS1) == 0) ? RegId() : intRegClass[RS1]);
         flags[IsInteger]=true;
         flags[IsFloating]=true;
         flags[IsStore]=true;
@@ -261,13 +261,13 @@ Fault
                             trace::InstRecord *traceData) const
 {
     RegIndex idx;
-    CRegVal Mem = {};
+    CRegVal CMem = {};
     %(idx_code)s;
 
-    getMemLE(pkt, Mem, traceData);
+    getMemLE(pkt, CMem, traceData);
     //memcpy(Mem.data(), pkt->getPtr<CRegElemVal>(), sizeof(CRegElemVal) * 4);
 
-    xc->setCRegOperand(this,idx,Mem)
+    xc->setCRegOperand(this,idx,CMem);
     return NoFault;
 }
 
@@ -345,21 +345,21 @@ Fault
                             trace::InstRecord* traceData) const
 {
     %(op_src_decl)s;
-    RegVal Mem={};
+    CRegVal CMem={};
     RegIndex idx;
 
     %(op_rd)s;
     %(idx_code)s;
-    Mem = xc->getCRegOperand(this,idx);
+    CMem = xc->getCRegOperand(this,idx);
 
     Addr EA;
     %(ea_code)s;
 
-    if (!alignmentOk(xc, EA, sizeof(Mem))) {
+    if (!alignmentOk(xc, EA, sizeof(CMem))) {
         return std::make_shared<AddressFault>(EA, STORE_ADDR_MISALIGNED);
     }
     {
-        Fault fault = writeMemTimingLE(xc, traceData, Mem, EA,
+        Fault fault = writeMemTimingLE(xc, traceData, CMem, EA,
             memAccessFlags, nullptr);
         if (fault != NoFault)
             return fault;
