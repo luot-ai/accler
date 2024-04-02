@@ -172,6 +172,20 @@ class CheckerCPU : public BaseCPU, public ExecContext
     // long as these methods don't copy the pointer into any long-term
     // storage (which is pretty hard to imagine they would have reason
     // to do).
+    
+    CRegVal
+    getCRegOperand(const StaticInst *si, RegIndex idx) override
+    {
+        CRegVal re= {} ;
+        return re;
+    }
+
+    void 
+    setCRegOperand(const StaticInst *si, RegIndex idx, CRegVal val) override
+    {
+        return;
+        //setResult(gem5::RiscvISA::cRegClass, val);
+    }
 
     RegVal
     getRegOperand(const StaticInst *si, int idx) override
