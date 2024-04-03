@@ -1368,10 +1368,9 @@ IEW::writebackInsts()
         if (!inst->isSquashed() && inst->isExecuted() &&
                 inst->getFault() == NoFault) {
             int dependents = instQueue.wakeDependents(inst);//memdepU：store；other：wakeupDest
-            // DPRINTF(IEW,"custom instruction [sn:%lli] PC %s. done, %d dependents inst ready\n",
-            //         inst->seqNum, inst->pcState(),cusDependents);
 
             //custom不会运行这段
+            DPRINTF(IEW,"waking done,now try to set scoreboard\n");
             for (int i = 0; i < inst->numDestRegs(); i++) {
                 // Mark register as ready if not pinned
                 if (inst->renamedDestIdx(i)->
@@ -1425,11 +1424,13 @@ IEW::tick()
         executeInsts();
 
         writebackInsts();
+        DPRINTF(IEW,"writebackinst done\n");
 
         // Have the instruction queue try to schedule any ready instructions.
         // (In actuality, this scheduling is for instructions that will
         // be executed next cycle.)
         instQueue.scheduleReadyInsts();
+        DPRINTF(IEW,"scheduleReadyInsts done\n");
 
         // Also should advance its own time buffers if the stage ran.
         // Not the best place for it, but this works (hopefully).

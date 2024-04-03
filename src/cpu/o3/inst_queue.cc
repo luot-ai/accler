@@ -971,11 +971,14 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
     if (completed_inst->isCustom())
     {
         cusCtrl.doneInsts(completed_inst);
+        DPRINTF(IQ, "custom instruction done.\n");
            //wakeup
         int tid = completed_inst->threadNumber;
         for (auto it = cusCtrl.notRdyInstList[tid].begin(); it != cusCtrl.notRdyInstList[tid].end();) 
         {
             DynInstPtr inst = (*it);
+            DPRINTF(IQ, "checking notRdyList：PC %s [sn:%llu].\n",
+            inst->pcState(), inst->seqNum);
             bool canIss=cusCtrl.checkCanIss(inst);
             if(canIss)
             {

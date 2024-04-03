@@ -237,9 +237,9 @@ CustomControl::checkCanIss(const DynInstPtr &inst)
 {
     assert(inst->isCustom());
     int* info = getInfo(inst);
-    delete[] info;
     bool canIss = ckInfo(info);
     if(canIss)  setBusyVec(info[IST],info[IDX1],true);
+    delete[] info;
     return canIss;
 }
 
@@ -264,7 +264,6 @@ CustomControl::doneInsts(const DynInstPtr &completed_inst)
 {
     assert(completed_inst->isCustom());
     int* info = getInfo(completed_inst);
-    delete[] info;
     setBusyVec(info[IST],info[IDX1],false);
     if(info[IST]==OACC)
     {
@@ -276,6 +275,7 @@ CustomControl::doneInsts(const DynInstPtr &completed_inst)
         int doneVal = info[DONEVAL];
         for (int i = IDX1; i < IDX1 + numOfIdx(info); i++) setVal(info[i],doneVal);
     }
+    delete[] info;
 }
 
 

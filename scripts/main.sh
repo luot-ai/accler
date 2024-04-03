@@ -4,7 +4,7 @@ GEM5_DIR=/gem5
 DNDIR=$GEM5_DIR/darknet
 SCRIPT_DIR=$GEM5_DIR/scripts
 run_mode=${1:-"pipe"}
-main_program=${2:-"winomain"}
+main_program=${2:-"test1"}
 
 
 
@@ -20,7 +20,7 @@ if [ "$run_mode" = "0" ]; then
     ./run_darknet.sh $run_mode $main_program
 else
     {
-        ./run_darknet1.sh e $main_program
+        #./run_darknet1.sh e $main_program
         ./run_darknet1.sh $run_mode $main_program
     }
 fi
