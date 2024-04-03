@@ -14,10 +14,10 @@
 #define ISVAL 0
 #define DONEVAL 1
 #define IST 2
-#define IDX1 IST+1
-#define IDX2 IST+2
-#define IDX3 IST+3
-#define TOTALIDX IDX3+1
+#define IDX1 (IST+1)
+#define IDX2 (IST+2)
+#define IDX3 (IST+3)
+#define TOTALIDX (IDX3+1)
 //用指令编号去索引busyVec
 //指令编号为0，用VEC编号去索引ldBusyVec
 #define VLOAD 0
@@ -148,6 +148,8 @@ CustomControl::getInfo(const DynInstPtr &inst)
         returnIdx[IST]=VSTORE;
         returnIdx[IDX1]=OUTVEC;
     }
+    DPRINTF(IQ, "get custom inst infomation: istNum %i ,issue val %i,done val %i,idx1 %i,idx2 %i,idx3 %i\n", returnIdx[IST],returnIdx[ISVAL],returnIdx[DONEVAL]
+    ,returnIdx[IDX1],returnIdx[IDX2],returnIdx[IDX3]);
     return returnIdx;
 }
 int
@@ -162,7 +164,7 @@ CustomControl::numOfIdx(int* info)
 bool 
 CustomControl::ckVal(RegIndex idx,int val)
 {
-    DPRINTF(IQ, "custom check: vec %i ,issue val %i,actual val %i\n", idx,val,controlVec[idx]);
+    DPRINTF(IQ, "custom check controlVec: vec %i ,issue val %i,actual val %i\n", idx,val,controlVec[idx]);
     return (controlVec[idx]==val);
 }
 //done后：设置vec进度
@@ -230,7 +232,7 @@ CustomControl::ckInfo(int* info)
         int isval = info[ISVAL];
         int index = info[i];
         if (index==OUTVEC && ist==OACC) isval = LOADIN;
-        DPRINTF(IQ, "custom check: src %i\n",(i-IDX1));
+        DPRINTF(IQ, "custom check: src %i\n",i);
         if (!ckVal(index,isval))
         {
             returnVal = false;

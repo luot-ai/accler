@@ -182,6 +182,7 @@ class PhysRegFile
     getCReg(RegIndex idx) 
     {
         CRegVal val = customRegFile.reg(idx);
+        DPRINTF(IEW,"Custom regfile:get register %i ,val is: %f,%f,%f,%f:\n",idx, val[0],val[1],val[2],val[3]);
         return val;
     }
 

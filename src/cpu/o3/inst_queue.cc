@@ -982,7 +982,7 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
             bool canIss=cusCtrl.checkCanIss((*cus_it));
             if(canIss)
             {
-                (*cus_it)->setCanIssue();
+                (*cus_it)->setCusReady();
                 addIfReady((*cus_it));
                 ListIt next_it = cus_it;
                 ++next_it; // 获取下一个有效的迭代器
@@ -997,6 +997,7 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
         }
         return dependents;
     }
+
     else
     {
 // The instruction queue here takes care of both floating and int ops
@@ -1373,7 +1374,7 @@ InstructionQueue::addToDependents(const DynInstPtr &new_inst)
     int8_t total_src_regs = new_inst->numSrcRegs();
     bool return_val = false;
     bool iniAtmp = true;
-    //custom inst不会执行以下
+    //custom cal inst不会执行以下，ld_tile和wb_tile会
     for (int src_reg_idx = 0;
          src_reg_idx < total_src_regs;
          src_reg_idx++)
@@ -1409,19 +1410,23 @@ InstructionQueue::addToDependents(const DynInstPtr &new_inst)
             }
         }
     }
+
     //类似的操作：检查是否可发射，可则set，否则添入相应数据结构
     if (iniAtmp && new_inst->isCustom())
     {
-        if (cusCtrl.checkCanIss(new_inst))
+        if (cusCtrl.checkCanIss(new_inst) )
         {
-            new_inst->setCanIssue();
+            new_inst->setCusReady();
             return_val = true;
         }
         else
         {
+            DPRINTF(IQ, "put custom PC %s into not ready inst.\n",
+                        new_inst->pcState());
             cusCtrl.notRdyInstList[new_inst->threadNumber].push_back(new_inst);
         }
     }
+
     return return_val;
 }
 
