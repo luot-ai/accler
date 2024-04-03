@@ -809,7 +809,7 @@ decode QUADRANT default Unknown::unknown() {
                     }},OaccOp,IsOacc);  
                 }
             }
-            0x4: VStore::wb_tile({{
+            0x3: VStore::wb_tile({{
                 idx =(RegIndex)8;
             }});      
         }
