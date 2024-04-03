@@ -9,7 +9,7 @@
 #include "cpu/o3/cuscon.hh"
 #include "cpu/o3/inst_queue.hh"
 #include "cpu/o3/dyn_inst.hh"
-
+#include "debug/IQ.hh"
 //info索引
 #define ISVAL 0
 #define DONEVAL 1
@@ -41,7 +41,7 @@
 #define DONEAAMUL   2
 #define DONETRIADD  3
 #define OUTVEC  8
-#define WBVAL   2
+#define WBVAL   1
 
 namespace gem5 
 {
@@ -162,12 +162,14 @@ CustomControl::numOfIdx(int* info)
 bool 
 CustomControl::ckVal(RegIndex idx,int val)
 {
+    DPRINTF(IQ, "custom check: vec %i ,issue val %i,actual val %i\n", idx,val,controlVec[idx]);
     return (controlVec[idx]==val);
 }
 //done后：设置vec进度
 void
 CustomControl::setVal(RegIndex idx,int val)
 {
+    DPRINTF(IQ, "set custom controlVec %i to val %i\n", idx,val);
     controlVec[idx]=val;
 }
 
@@ -203,7 +205,11 @@ CustomControl::ckInfo(int* info)
     //busy
     int ist=info[IST];
     int may_ldvec=info[IDX1];
-    if ( !instNotBusy(ist,may_ldvec) ) returnVal = false;
+    if ( !instNotBusy(ist,may_ldvec) ) 
+    {
+        returnVal = false;
+        DPRINTF(IQ, "there is a same custom inst busy");
+    }
     //load kernel和其他custom指令保持定序
     if ( ist == VLOAD && may_ldvec < OUTVEC && may_ldvec >= STLDK)
     {
@@ -224,6 +230,7 @@ CustomControl::ckInfo(int* info)
         int isval = info[ISVAL];
         int index = info[i];
         if (index==OUTVEC && ist==OACC) isval = LOADIN;
+        DPRINTF(IQ, "custom check: src %i\n",(i-IDX1));
         if (!ckVal(index,isval))
         {
             returnVal = false;
@@ -236,10 +243,12 @@ bool
 CustomControl::checkCanIss(const DynInstPtr &inst)
 {
     assert(inst->isCustom());
+    DPRINTF(IQ, "check if custom PC %s can issue.\n", inst->pcState());
     int* info = getInfo(inst);
     bool canIss = ckInfo(info);
     if(canIss)  setBusyVec(info[IST],info[IDX1],true);
     delete[] info;
+    
     return canIss;
 }
 
