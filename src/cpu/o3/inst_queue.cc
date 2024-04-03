@@ -973,25 +973,29 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
         cusCtrl.doneInsts(completed_inst);
         DPRINTF(IQ, "custom instruction done.\n");
            //wakeup
-        int tid = completed_inst->threadNumber;
-        for (auto it = cusCtrl.notRdyInstList[tid].begin(); it != cusCtrl.notRdyInstList[tid].end();) 
-        {
-            DynInstPtr inst = (*it);
-            DPRINTF(IQ, "checking notRdyList：PC %s [sn:%llu].\n",
-            inst->pcState(), inst->seqNum);
-            bool canIss=cusCtrl.checkCanIss(inst);
+        ThreadID tid = completed_inst->threadNumber;
+
+        ListIt cus_it = cusCtrl.notRdyInstList[tid].begin();
+        while (cus_it != cusCtrl.notRdyInstList[tid].end() ) {
+            DPRINTF(IQ, "checking notRdyList\n");
+            DPRINTF(IQ, "PC %s [sn:%llu].\n",(*cus_it)->pcState(), (*cus_it)->seqNum);
+            bool canIss=cusCtrl.checkCanIss((*cus_it));
             if(canIss)
             {
-                inst->setCanIssue();
-                addIfReady(inst);
-                it = cusCtrl.notRdyInstList[tid].erase(it);
+                (*cus_it)->setCanIssue();
+                addIfReady((*cus_it));
+                ListIt next_it = cus_it;
+                ++next_it; // 获取下一个有效的迭代器
                 dependents++;
+                cus_it = cusCtrl.notRdyInstList[tid].erase(cus_it);
+                cus_it = next_it; // 更新迭代器
             }
             else 
             {
-                ++it; 
+                ++cus_it; 
             }
         }
+        return dependents;
     }
     else
     {
