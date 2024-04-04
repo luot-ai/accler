@@ -672,7 +672,7 @@ Decode::decodeInsts(ThreadID tid)
         // them as ready to issue at any time.  Not sure if this check
         // should exist here or at a later stage; however it doesn't matter
         // too much for function correctness.
-        if (inst->numSrcRegs() == 0  && !inst->isCustom() ) {
+        if (inst->numSrcRegs() == 0 ) {
             inst->setCanIssue();
         }
 

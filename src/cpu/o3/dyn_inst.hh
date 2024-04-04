@@ -767,7 +767,7 @@ class DynInst : public ExecContext, public RefCounted
         if (!isCustom())
         return status[CanIssue]; 
         else 
-        return readyCustom() && status[CanIssue]; 
+        return (readyCustom() && status[CanIssue]); 
     }
     bool readyCustom() const { return status[customReady]; }
     
