@@ -41,7 +41,7 @@
 #define DONEAAMUL   2
 #define DONETRIADD  3
 #define OUTVEC  8
-#define WBVAL   1
+#define WBVAL   2
 
 namespace gem5 
 {
@@ -86,6 +86,7 @@ CustomControl::getInfo(const DynInstPtr &inst)
     if(inst->isVLoad()){
         RegIndex destIdx = inst->cDestIdx();
         returnIdx[IDX1]=destIdx;
+        DPRINTF(IQ, "VLOAD: dest vec is %i\n", returnIdx[IDX1]);
     }
     //AAMul
     else if (inst->isAAMul())
@@ -97,18 +98,21 @@ CustomControl::getInfo(const DynInstPtr &inst)
             returnIdx[IST]=AAMUL02;
             returnIdx[IDX1]=0;
             returnIdx[IDX2]=2;
+            DPRINTF(IQ, "AAMUL02\n");
         }
         else if (inst->isAAMul31())
         {
             returnIdx[IST]=AAMUL31;
             returnIdx[IDX1]=3;
             returnIdx[IDX2]=1;
+            DPRINTF(IQ, "AAMUL31\n");
         }    
         else if (inst->isAAMul1221())
         {
             returnIdx[IST]=AAMUL1221;
             returnIdx[IDX1]=1;
             returnIdx[IDX2]=2;
+            DPRINTF(IQ, "AAMUL1221\n");
         }
     }
     //TriAdd OACC
@@ -122,6 +126,7 @@ CustomControl::getInfo(const DynInstPtr &inst)
             returnIdx[IDX1]=0;
             returnIdx[IDX2]=1;
             returnIdx[IDX3]=2;
+            DPRINTF(IQ, "AAMUL012\n");
         }
         else if (inst->isTriAdd321())
         {
@@ -129,6 +134,7 @@ CustomControl::getInfo(const DynInstPtr &inst)
             returnIdx[IDX1]=3;
             returnIdx[IDX2]=2;
             returnIdx[IDX3]=1;
+            DPRINTF(IQ, "AAMUL321\n");
         }
     }
     else if (inst->isOacc())
@@ -139,6 +145,7 @@ CustomControl::getInfo(const DynInstPtr &inst)
         returnIdx[IDX1]=0;
         returnIdx[IDX2]=3;
         returnIdx[IDX3]=OUTVEC;
+        DPRINTF(IQ, "OACC\n");
     }
     //VSTORE
     else if (inst->isVStore())
@@ -147,8 +154,9 @@ CustomControl::getInfo(const DynInstPtr &inst)
         returnIdx[DONEVAL]=EMPTY;
         returnIdx[IST]=VSTORE;
         returnIdx[IDX1]=OUTVEC;
+        DPRINTF(IQ, "VSTORE\n");
     }
-    DPRINTF(IQ, "get custom inst infomation: istNum %i ,issue val %i,done val %i,idx1 %i,idx2 %i,idx3 %i\n", returnIdx[IST],returnIdx[ISVAL],returnIdx[DONEVAL]
+    DPRINTF(IQ, "get custom inst infomation: issue val %i,done val %i,idx1 %i,idx2 %i,idx3 %i\n", returnIdx[ISVAL],returnIdx[DONEVAL]
     ,returnIdx[IDX1],returnIdx[IDX2],returnIdx[IDX3]);
     return returnIdx;
 }
@@ -164,14 +172,14 @@ CustomControl::numOfIdx(int* info)
 bool 
 CustomControl::ckVal(RegIndex idx,int val)
 {
-    DPRINTF(IQ, "custom check controlVec: vec %i ,issue val %i,actual val %i\n", idx,val,controlVec[idx]);
+    DPRINTF(IQ, "custom check ctrlVec: vec %i ,issue val %i,actual val %i\n", idx,val,controlVec[idx]);
     return (controlVec[idx]==val);
 }
 //done后：设置vec进度
 void
 CustomControl::setVal(RegIndex idx,int val)
 {
-    DPRINTF(IQ, "set custom controlVec %i to val %i\n", idx,val);
+    DPRINTF(IQ, "set custom ctrlVec %i to val %i\n", idx,val);
     controlVec[idx]=val;
 }
 
@@ -179,10 +187,18 @@ CustomControl::setVal(RegIndex idx,int val)
 bool 
 CustomControl::instNotBusy(int instNum,int ldVecNum)
 {
+    bool returnVal;
     if(instNum==VLOAD)
-    return !ldBusyVec[ldVecNum];
+    {   
+        returnVal=!ldBusyVec[ldVecNum];
+        DPRINTF(IQ, "check if there is a flight ld_tile[%i] inst: %i\n", ldVecNum,!returnVal);
+    }
     else
-    return !busyVec[instNum];
+    {
+        returnVal=!busyVec[instNum];
+        DPRINTF(IQ, "check if there is a flight [%i] inst: %i\n", instNum,!returnVal);
+    }
+    return returnVal;
 }
 //issue和done：都需要设置busy位
 void 
@@ -210,29 +226,36 @@ CustomControl::ckInfo(int* info)
     if ( !instNotBusy(ist,may_ldvec) ) 
     {
         returnVal = false;
-        DPRINTF(IQ, "there is a same custom inst busy");
+        DPRINTF(IQ, "there is a same custom inst busy\n");
     }
     //load kernel和其他custom指令保持定序
     if ( ist == VLOAD && may_ldvec < OUTVEC && may_ldvec >= STLDK)
     {
         if (!instNotBusy(PRELDK,0))
-            returnVal = false;
+        {
+            returnVal = false;  
+            DPRINTF(IQ, "load kernel wait for other custom inst\n");
+        }
+            
     }
     else
     {
         for ( int ldk = STLDK;ldk < OUTVEC;ldk++)
         {
             if(!instNotBusy(VLOAD,ldk))
+            {
+                DPRINTF(IQ, "custom load kernel %i inst is being done!\n",ldk);
                 returnVal = false;
+            }
         }
     }
     //control
+    DPRINTF(IQ, "now check ctrlvec: \n");
     for (int i = IDX1; i < IDX1 + numOfIdx(info); i++)
     {
         int isval = info[ISVAL];
         int index = info[i];
         if (index==OUTVEC && ist==OACC) isval = LOADIN;
-        DPRINTF(IQ, "custom check: src %i\n",i);
         if (!ckVal(index,isval))
         {
             returnVal = false;
@@ -245,10 +268,14 @@ bool
 CustomControl::checkCanIss(const DynInstPtr &inst)
 {
     assert(inst->isCustom());
-    DPRINTF(IQ, "check if custom PC %s can issue.\n", inst->pcState());
+    DPRINTF(IQ, "check if ins PC %s custom ready.\n", inst->pcState());
     int* info = getInfo(inst);
     bool canIss = ckInfo(info);
-    if(canIss)  setBusyVec(info[IST],info[IDX1],true);
+    if(canIss)  
+    {
+        setBusyVec(info[IST],info[IDX1],true);
+        DPRINTF(IQ, "Yes,custom ready\n");
+    }    
     delete[] info;
     
     return canIss;
@@ -278,13 +305,15 @@ CustomControl::doneInsts(const DynInstPtr &completed_inst)
     setBusyVec(info[IST],info[IDX1],false);
     if(info[IST]==OACC)
     {
-        for (int i=0;i<=4;i++) setVal(i,EMPTY);
+        for (int i=0;i<4;i++) setVal(i,EMPTY);
         setVal(OUTVEC,WBVAL);
     }
     else
     {
         int doneVal = info[DONEVAL];
-        for (int i = IDX1; i < IDX1 + numOfIdx(info); i++) setVal(info[i],doneVal);
+        setVal(info[IDX1],doneVal);//ld,aamul02,aamul31,triadd,wb
+        if(info[IST]==AAMUL1221)
+        {setVal(info[IDX2],doneVal);}
     }
     delete[] info;
 }
