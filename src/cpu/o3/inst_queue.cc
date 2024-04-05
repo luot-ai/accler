@@ -995,12 +995,10 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
                 ++cus_it; 
             }
         }
-        return dependents;
     }
 
-    else
-    {
-// The instruction queue here takes care of both floating and int ops
+
+    // The instruction queue here takes care of both floating and int ops
     if (completed_inst->isFloating()) {
         iqIOStats.fpInstQueueWakeupAccesses++;
     } else if (completed_inst->isVector()) {
@@ -1096,7 +1094,7 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
         regScoreboard[dest_reg->flatIndex()] = true;
     }
     return dependents;
-    }
+    
 }
 
 void
@@ -1476,6 +1474,7 @@ InstructionQueue::addIfReady(const DynInstPtr &inst)
         if (inst->isMemRef()) {
 
             DPRINTF(IQ, "Checking if memory instruction can issue.\n");
+
 
             // Message to the mem dependence unit that this instruction has
             // its registers ready.
