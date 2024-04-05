@@ -231,12 +231,25 @@ CustomControl::ckInfo(int* info)
     //load kernel和其他custom指令保持定序
     if ( ist == VLOAD && may_ldvec < OUTVEC && may_ldvec >= STLDK)
     {
-        if (!instNotBusy(PRELDK,0))
+        for ( int cist=VLOAD ; cist < TOTALIST ; cist ++)
         {
-            returnVal = false;  
-            DPRINTF(IQ, "load kernel wait for other custom inst\n");
+            if(cist==VLOAD)
+            {
+                for (int v = 0;v<TOTALVEC;v++)
+                {
+                    if (!instNotBusy(VLOAD,v))
+                    {
+                        returnVal = false;  
+                        DPRINTF(IQ, "load kernel wait for other custom load inst\n");
+                    }
+                }
+            }
+            if (!instNotBusy(cist,0))
+            {
+                returnVal = false;  
+                DPRINTF(IQ, "load kernel wait for other custom inst\n");
+            }
         }
-            
     }
     else
     {
@@ -251,6 +264,7 @@ CustomControl::ckInfo(int* info)
     }
     //control
     DPRINTF(IQ, "now check ctrlvec: \n");
+    if ( ist == VLOAD && may_ldvec < OUTVEC && may_ldvec >= STLDK) return returnVal;
     for (int i = IDX1; i < IDX1 + numOfIdx(info); i++)
     {
         int isval = info[ISVAL];
