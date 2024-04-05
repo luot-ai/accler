@@ -979,6 +979,11 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
         while (cus_it != cusCtrl.notRdyInstList[tid].end() ) {
             DPRINTF(IQ, "checking notRdyList\n");
             DPRINTF(IQ, "PC %s [sn:%llu].\n",(*cus_it)->pcState(), (*cus_it)->seqNum);
+            if ((*cus_it)->isSquashed())
+            { 
+                ++cus_it;
+                continue;
+            }
             bool canIss=cusCtrl.checkCanIss((*cus_it));
             if(canIss)
             {
