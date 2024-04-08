@@ -58,6 +58,7 @@ CustomControl::CustomControl()
     for (int i = 0; i < MaxThreads; ++i) 
     {
         notRdyInstList[i] = std::list<DynInstPtr>();
+        notRdyLdKernelList[i] = std::list<DynInstPtr>();
     } 
 }
 
@@ -246,13 +247,18 @@ CustomControl::ckInfo(int* info,const DynInstPtr &inst)
         {
             if(cist==VLOAD)
             {
-                for (int v = 0;v<TOTALVEC;v++)
+                for (int v = 0;v < STLDK;v++)
                 {
                     if (!instNotBusy(VLOAD,v))
                     {
                         returnVal = false;  
                         DPRINTF(IQ, "load kernel wait for other custom load inst\n");
                     }
+                }
+                if (!instNotBusy(VLOAD,OUTVEC))
+                {
+                    returnVal = false;  
+                    DPRINTF(IQ, "load kernel wait for other custom load inst\n");
                 }
             }
             else
@@ -274,21 +280,21 @@ CustomControl::ckInfo(int* info,const DynInstPtr &inst)
                 DPRINTF(IQ, "custom load kernel %i inst is being done!\n",ldk);
                 returnVal = false;
             }
-            ThreadID tid = inst->threadNumber;
-            std::list<DynInstPtr>::iterator cus_it = notRdyInstList[tid].begin();
-            DPRINTF(IQ, "checking notRdyList\n");
-            while (cus_it != notRdyInstList[tid].end() ) {
-            DPRINTF(IQ, "PC %s [sn:%llu].\n",(*cus_it)->pcState(), (*cus_it)->seqNum);
-            if (!(*cus_it)->isSquashed() && !isLdKernel(getInfo((*cus_it))) && (inst->seqNum > (*cus_it)->seqNum))
-            { 
-                DPRINTF(IQ, "wait for older custom load kernel [sn:%llu]\n",(*cus_it)->seqNum);
-                returnVal = false ;
-                break;
-            }
-            else
-            {
-                ++cus_it; 
-            }
+        }
+        ThreadID tid = inst->threadNumber;
+        std::list<DynInstPtr>::iterator cus_it = notRdyLdKernelList[tid].begin();
+        DPRINTF(IQ, "checking notRdyLdKernel\n");
+        while (cus_it != notRdyLdKernelList[tid].end() ) {
+        DPRINTF(IQ, "PC %s [sn:%llu].\n",(*cus_it)->pcState(), (*cus_it)->seqNum);
+        if (!(*cus_it)->isSquashed() && (inst->seqNum > (*cus_it)->seqNum))
+        { 
+            DPRINTF(IQ, "wait for older custom load kernel [sn:%llu]\n",(*cus_it)->seqNum);
+            returnVal = false ;
+            break;
+        }
+        else
+        {
+            ++cus_it; 
         }
         }
     }
@@ -354,6 +360,17 @@ CustomControl::doneInsts(const DynInstPtr &completed_inst)
     assert(completed_inst->isCustom());
     int* info = getInfo(completed_inst);
     setBusyVec(info[IST],info[IDX1],false);
+    ThreadID tid = completed_inst->threadNumber;
+    if(isLdKernel(info))
+    {
+        if(!notRdyLdKernelList[tid].empty())
+        {
+            std::list<DynInstPtr>::iterator cus_it = notRdyLdKernelList[tid].begin();
+            if(completed_inst->seqNum == (*cus_it)->seqNum)
+                notRdyLdKernelList->pop_front();
+        }
+    }
+
     if(info[IST]==OACC)
     {
         setVal(0,EMPTY);
