@@ -37,6 +37,7 @@ class CustomControl
         bool checkCanIss(const DynInstPtr &inst);
         void doneInsts(const DynInstPtr &completed_inst);
         std::list<DynInstPtr> notRdyInstList[MaxThreads];
+        std::list<DynInstPtr> notRdyLdKernelList[MaxThreads];
 };
 
 } // namespace o3
