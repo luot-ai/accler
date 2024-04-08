@@ -31,7 +31,10 @@
 #define OACC 8
 #define VSTORE 9
 #define TOTALIST 10
-#define TOTALVEC 9
+//vec:新增tmp
+#define TMPA 9
+#define TMPB 10
+#define TOTALVEC 11
 //ld_kernel和其他custom的互定序
 #define PRELDK VSTORE
 #define STLDK  4 
@@ -124,17 +127,17 @@ CustomControl::getInfo(const DynInstPtr &inst)
         {
             returnIdx[IST]=TRIADD012;
             returnIdx[IDX1]=0;
-            returnIdx[IDX2]=1;
-            returnIdx[IDX3]=2;
-            DPRINTF(IQ, "AAMUL012\n");
+            returnIdx[IDX2]=TMPA;
+            returnIdx[IDX3]=TMPB;
+            DPRINTF(IQ, "TRIADD012\n");
         }
         else if (inst->isTriAdd321())
         {
             returnIdx[IST]=TRIADD321;
             returnIdx[IDX1]=3;
-            returnIdx[IDX2]=2;
-            returnIdx[IDX3]=1;
-            DPRINTF(IQ, "AAMUL321\n");
+            returnIdx[IDX2]=TMPB;
+            returnIdx[IDX3]=TMPA;
+            DPRINTF(IQ, "TRIADD321\n");
         }
     }
     else if (inst->isOacc())
@@ -210,6 +213,14 @@ CustomControl::setBusyVec(int instNum,int ldVecNum,bool setStatus)
     busyVec[instNum]=setStatus;
 }
 
+bool 
+CustomControl::isLdKernel(int* info)
+{
+    int ist=info[IST];
+    int may_ldvec=info[IDX1];
+    return ( ist == VLOAD && may_ldvec < OUTVEC && may_ldvec >= STLDK);
+}
+
 /*
  * 根据指令的类型，检查是否可以发射
  *      是否有同一指令正在操作
@@ -217,7 +228,7 @@ CustomControl::setBusyVec(int instNum,int ldVecNum,bool setStatus)
  *      vec的进度：OACC有些特殊
  */
 bool 
-CustomControl::ckInfo(int* info)
+CustomControl::ckInfo(int* info,const DynInstPtr &inst)
 {
     bool returnVal = true;
     //busy
@@ -229,7 +240,7 @@ CustomControl::ckInfo(int* info)
         DPRINTF(IQ, "there is a same custom inst busy\n");
     }
     //load kernel和其他custom指令保持定序
-    if ( ist == VLOAD && may_ldvec < OUTVEC && may_ldvec >= STLDK)
+    if ( isLdKernel(info) )
     {
         for ( int cist=VLOAD ; cist < TOTALIST ; cist ++)
         {
@@ -244,10 +255,13 @@ CustomControl::ckInfo(int* info)
                     }
                 }
             }
-            if (!instNotBusy(cist,0))
+            else
             {
-                returnVal = false;  
-                DPRINTF(IQ, "load kernel wait for other custom inst\n");
+                if (!instNotBusy(cist,0))
+                {
+                    returnVal = false;  
+                    DPRINTF(IQ, "load kernel wait for other custom inst\n");
+                }
             }
         }
     }
@@ -260,6 +274,22 @@ CustomControl::ckInfo(int* info)
                 DPRINTF(IQ, "custom load kernel %i inst is being done!\n",ldk);
                 returnVal = false;
             }
+            ThreadID tid = inst->threadNumber;
+            std::list<DynInstPtr>::iterator cus_it = notRdyInstList[tid].begin();
+            DPRINTF(IQ, "checking notRdyList\n");
+            while (cus_it != notRdyInstList[tid].end() ) {
+            DPRINTF(IQ, "PC %s [sn:%llu].\n",(*cus_it)->pcState(), (*cus_it)->seqNum);
+            if (!(*cus_it)->isSquashed() && !isLdKernel(getInfo((*cus_it))) && (inst->seqNum > (*cus_it)->seqNum))
+            { 
+                DPRINTF(IQ, "wait for older custom load kernel [sn:%llu]\n",(*cus_it)->seqNum);
+                returnVal = false ;
+                break;
+            }
+            else
+            {
+                ++cus_it; 
+            }
+        }
         }
     }
     //control
@@ -276,6 +306,13 @@ CustomControl::ckInfo(int* info)
             break;
         }
     }
+    if (ist == AAMUL1221)
+    {
+        if ((!ckVal(TMPA,EMPTY))|(!(ckVal(TMPB,EMPTY))))
+        {
+            returnVal=false;
+        }
+    }
     return returnVal;
 }
 bool
@@ -284,7 +321,7 @@ CustomControl::checkCanIss(const DynInstPtr &inst)
     assert(inst->isCustom());
     DPRINTF(IQ, "check if ins PC %s custom ready.\n", inst->pcState());
     int* info = getInfo(inst);
-    bool canIss = ckInfo(info);
+    bool canIss = ckInfo(info,inst);
     if(canIss)  
     {
         setBusyVec(info[IST],info[IDX1],true);
@@ -319,15 +356,23 @@ CustomControl::doneInsts(const DynInstPtr &completed_inst)
     setBusyVec(info[IST],info[IDX1],false);
     if(info[IST]==OACC)
     {
-        for (int i=0;i<4;i++) setVal(i,EMPTY);
+        setVal(0,EMPTY);
+        setVal(1,EMPTY);
+        setVal(2,EMPTY);
+        setVal(3,EMPTY);
+        setVal(TMPA,EMPTY);
+        setVal(TMPB,EMPTY);
         setVal(OUTVEC,WBVAL);
     }
     else
     {
         int doneVal = info[DONEVAL];
-        setVal(info[IDX1],doneVal);//ld,aamul02,aamul31,triadd,wb
         if(info[IST]==AAMUL1221)
-        {setVal(info[IDX2],doneVal);}
+        {
+            setVal(TMPA,doneVal);
+            setVal(TMPB,doneVal);
+        }
+        else setVal(info[IDX1],doneVal);//ld,aamul02,aamul31,triadd,wb
     }
     delete[] info;
 }

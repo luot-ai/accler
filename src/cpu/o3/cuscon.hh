@@ -32,7 +32,8 @@ class CustomControl
         void setVal(RegIndex idx,int val);
         bool instNotBusy(int instNum,int ldVecNum);
         void setBusyVec(int instNum,int ldVecNum,bool setStatus);
-        bool ckInfo(int* info);
+        bool isLdKernel(int* info);
+        bool ckInfo(int* info,const DynInstPtr &inst);
         bool checkCanIss(const DynInstPtr &inst);
         void doneInsts(const DynInstPtr &completed_inst);
         std::list<DynInstPtr> notRdyInstList[MaxThreads];

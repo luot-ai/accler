@@ -976,25 +976,25 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
         ThreadID tid = completed_inst->threadNumber;
 
         ListIt cus_it = cusCtrl.notRdyInstList[tid].begin();
+        DPRINTF(IQ, "checking notRdyList\n");
         while (cus_it != cusCtrl.notRdyInstList[tid].end() ) {
-            DPRINTF(IQ, "checking notRdyList\n");
-            DPRINTF(IQ, "PC %s [sn:%llu].\n",(*cus_it)->pcState(), (*cus_it)->seqNum);
             if ((*cus_it)->isSquashed())
             { 
                 ++cus_it;
                 continue;
             }
+            DPRINTF(IQ, "PC %s [sn:%llu].\n",(*cus_it)->pcState(), (*cus_it)->seqNum);
             bool canIss=cusCtrl.checkCanIss((*cus_it));
             if(canIss)
             {
                 (*cus_it)->setCusReady();
                 addIfReady((*cus_it));
-                ListIt next_it = cus_it;
-                ++next_it; // 获取下一个有效的迭代器
-                dependents++;
-                cus_it = cusCtrl.notRdyInstList[tid].erase(cus_it);
-                cus_it = next_it; // 更新迭代器
-            }
+                                    ListIt next_it = cus_it;
+                    ++next_it; // 获取下一个有效的迭代器
+                    dependents++;
+                    cus_it = cusCtrl.notRdyInstList[tid].erase(cus_it);
+                    cus_it = next_it; // 更新迭代器
+                            }
             else 
             {
                 ++cus_it; 
