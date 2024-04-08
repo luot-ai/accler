@@ -791,12 +791,12 @@ decode QUADRANT default Unknown::unknown() {
             }
             0x2: decode CVEC {
                 format Varith3{
-                    0x1: triadd012 ({{idx1 = 0;idx2 = 1;idx3=2;}},{{
+                    0x1: triadd012 ({{idx1 = 0;idx2 = 9;idx3=10;}},{{
                         for (int i = 0; i < 4; i++) {
                             CV_res[i]=CV_src1[i]+CV_src2[i]+CV_src3[i];
                         }
                     }},TriAddOp,IsTriAdd012);
-                    0x2: triadd321({{idx1 = 3;idx2 = 2;idx3=1;}},{{
+                    0x2: triadd321({{idx1 = 3;idx2 = 10;idx3=9;}},{{
                         for (int i = 0; i < 4; i++) {
                             CV_res[i]=-CV_src1[i]-CV_src2[i]+CV_src3[i];
                         }

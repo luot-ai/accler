@@ -170,7 +170,7 @@ class BaseO3CPU(BaseCPU):
     numPhysMatRegs = Param.Unsigned(2, "Number of physical matrix registers")
     # most ISAs don't use condition-code regs, so default is 0
     numPhysCCRegs = Param.Unsigned(0, "Number of physical cc registers")
-    numPhysCRegs = Param.Unsigned(9,"4 ifmap , 4 kernel , 1 output;each is 4 elem")
+    numPhysCRegs = Param.Unsigned(11,"4 ifmap , 4 kernel , 1 output;each is 4 elem")
     numIQEntries = Param.Unsigned(64, "Number of instruction queue entries")
     numROBEntries = Param.Unsigned(192, "Number of reorder buffer entries")
 

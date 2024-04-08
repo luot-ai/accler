@@ -30,7 +30,7 @@ namespace gem5
 
 namespace RiscvISA
 {
-const int NumCRegs = 9;
+const int NumCRegs = 11;
 const int NumElemInCReg = 4;
 const int SizeOfCRegsInBytes = NumElemInCReg * sizeof(CRegElemVal);
 
@@ -40,7 +40,7 @@ using cvreg_t = CustomVRegContainer;
 
 
 const std::vector<std::string> CVecRegNames = {
-    "c0",   "c1",   "c2",   "c3",   "c4",   "c5",   "c6",   "c7",   "c8"
+    "c0",   "c1",   "c2",   "c3",   "c4",   "c5",   "c6",   "c7",   "c8"  , "tmp1" , "tmp2"
 };
 
 inline constexpr RegClass cRegClass =

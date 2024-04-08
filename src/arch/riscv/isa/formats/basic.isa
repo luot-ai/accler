@@ -127,13 +127,17 @@ def template BasicVA2Execute {{
         CV_res1[2]=(-CV_tmp1[1]+CV_tmp1[2])*CV_msrc1[2];
         CV_res1[3]=(CV_tmp1[1]-CV_tmp1[3])*CV_msrc1[3];
         
-        xc->setCRegOperand(this,idx1,CV_res1);
         if(idx1==1 && idx2==2){
                 CV_res2[0]=(CV_tmp2[0]-CV_tmp2[2])*CV_msrc2[0];
                 CV_res2[1]=(CV_tmp2[1]+CV_tmp2[2])*CV_msrc2[1];
                 CV_res2[2]=(-CV_tmp2[1]+CV_tmp2[2])*CV_msrc2[2];
                 CV_res2[3]=(CV_tmp2[1]-CV_tmp2[3])*CV_msrc2[3];
-            xc->setCRegOperand(this,idx2,CV_res2);
+            xc->setCRegOperand(this,9,CV_res1);
+            xc->setCRegOperand(this,10,CV_res2);
+        }
+        else 
+        {
+            xc->setCRegOperand(this,idx1,CV_res1);
         }
         return NoFault;
     }
