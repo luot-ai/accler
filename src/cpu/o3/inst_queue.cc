@@ -599,6 +599,26 @@ InstructionQueue::insert(const DynInstPtr &new_inst)
         addIfReady(new_inst);
     }
 
+    ThreadID tid = new_inst->threadNumber;
+    if (!new_inst->readyToIssue() && new_inst->isCustom()){
+        if(cusCtrl.isLdKernel(cusCtrl.getInfo(new_inst)))
+        {
+            if(cusCtrl.notRdyLdKernelList[tid].empty())
+            {
+                cusCtrl.notRdyLdKernelList[tid].push_back(new_inst);
+            }
+            else
+            {
+                ListIt cus_it = cusCtrl.notRdyLdKernelList[tid].begin();
+                if(new_inst->seqNum > (*cus_it)->seqNum)
+                {
+                    cusCtrl.notRdyLdKernelList[new_inst->threadNumber].pop_front();
+                    cusCtrl.notRdyLdKernelList[new_inst->threadNumber].push_back(new_inst);
+                }
+            }
+        }
+    }
+
     ++iqStats.instsAdded;
 
     count[new_inst->threadNumber]++;
