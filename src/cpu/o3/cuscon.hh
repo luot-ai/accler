@@ -36,6 +36,7 @@ class CustomControl
         bool ckInfo(int* info,const DynInstPtr &inst);
         bool checkCanIss(const DynInstPtr &inst);
         void doneInsts(const DynInstPtr &completed_inst);
+        void squash(const DynInstPtr &inst);
         std::list<DynInstPtr> notRdyInstList[MaxThreads];
         std::list<DynInstPtr> notRdyLdKernelList[MaxThreads];
 };

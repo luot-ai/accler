@@ -1279,6 +1279,12 @@ InstructionQueue::doSquash(ThreadID tid)
             DPRINTF(IQ, "[tid:%i] Instruction [sn:%llu] PC %s squashed.\n",
                     tid, squashed_inst->seqNum, squashed_inst->pcState());
 
+            if (squashed_inst->isCustom() && squashed_inst->readyCustom())
+            {
+                cusCtrl.squash(squashed_inst);
+            }
+            
+
             bool is_acq_rel = squashed_inst->isFullMemBarrier() &&
                          (squashed_inst->isLoad() ||
                           (squashed_inst->isStore() &&

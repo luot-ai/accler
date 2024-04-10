@@ -394,6 +394,13 @@ CustomControl::doneInsts(const DynInstPtr &completed_inst)
     delete[] info;
 }
 
+void 
+CustomControl::squash(const DynInstPtr &inst)
+{
+    int* info = getInfo(inst);
+    assert (!instNotBusy(info[IST],info[IDX1]));
+    setBusyVec(info[IST],info[IDX1],false);
+}
 
 } // namespace o3
 
