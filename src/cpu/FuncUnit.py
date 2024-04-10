@@ -120,6 +120,7 @@ class OpClass(Enum):
         "VectorIntegerExtension",
         "VectorConfig",
         "AAMul",
+        "AAMul1221",
         "TriAdd",
         "Oacc",
     ]

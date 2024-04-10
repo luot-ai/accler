@@ -786,7 +786,7 @@ decode QUADRANT default Unknown::unknown() {
                     0x5: aamul1221({{idx1 = 1;idx2 = 2;}},{{
                         CV_tmp1[i]=CV_src1[i]+CV_src2[i];
                         CV_tmp2[i]=-CV_src1[i]+CV_src2[i];
-                    }},AAMulOp,IsAAMul1221);
+                    }},AAMul1221Op,IsAAMul1221);
                 }
             }
             0x2: decode CVEC {

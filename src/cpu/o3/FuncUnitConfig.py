@@ -137,6 +137,7 @@ class RdWrPort(FUDesc):
 class CustomFu(FUDesc):
     opList = [
         OpDesc(opClass="AAMul",opLat=7),
+        OpDesc(opClass="AAMul1221",opLat=8),
         OpDesc(opClass="TriAdd",opLat=4),
         OpDesc(opClass="Oacc",opLat=5)
     ]
