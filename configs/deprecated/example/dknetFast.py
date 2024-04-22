@@ -173,11 +173,9 @@ numThreads = 1
 darknet = Process(pid=500)
 darknet.executable = args.testbench
 darknet.cmd = [darknet.executable] + [
-    "classifier",
-    "predict",
-    "/gem5/darknet/cfg/imagenet1k.data", 
-    "/gem5/darknet/cfg/darknet19.cfg",
-    "/gem5/darknet/weights/darknet19.weights",
+    "classify",
+    "/gem5/darknet/cfg/tiny.cfg", 
+    "/gem5/darknet/weights/tiny.weights",
     "/gem5/darknet/data/dog.jpg",
 ]
 if args.benchmark_stdout:

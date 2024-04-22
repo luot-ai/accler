@@ -9,7 +9,7 @@ DATA_DIR=$DNET_DIR/data
 WEIGHT_DIR=$DNET_DIR/weights
 
 RUN_DIR=$DNET_DIR
-OUTPUT_DIR=$DNET_DIR/output
+OUTPUT_DIR=$DNET_DIR/outputFast
 SCRIPT_OUT=$OUTPUT_DIR/runscript.log                                                                    # File log for this script's stdout henceforth
 RUNMODE=$1
 TESTBENCH=$2
@@ -58,9 +58,9 @@ BOOM_FLAGS="--cpu-type=RiscvO3CPU \
 
 # Actually launch gem5!
 #O3PipeView,O3CPUAll
-$GEM5_DIR/build/RISCV/gem5.opt \
+$GEM5_DIR/build/RISCV/gem5.fast \
 --outdir=$OUTPUT_DIR \
-$GEM5_DIR/configs/deprecated/example/dknet.py \
+$GEM5_DIR/configs/deprecated/example/dknetFast.py \
 $BOOM_FLAGS \
 --testbench=$TESTBENCH \
 --mode='detect' \

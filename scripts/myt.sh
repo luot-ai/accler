@@ -4,7 +4,7 @@ GEM5_DIR=/gem5
 DNDIR=$GEM5_DIR/darknet
 SCRIPT_DIR=$GEM5_DIR/scripts
 run_mode=${1:-"pipe"}
-main_program=${2:-"darknet"}
+main_program=${2:-"winomain"}
 
 
 
