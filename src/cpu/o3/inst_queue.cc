@@ -560,6 +560,27 @@ InstructionQueue::hasReadyInsts()
     return false;
 }
 
+void 
+InstructionQueue::squashCustom(const DynInstPtr &squashed_inst,ThreadID tid)
+{
+    cusCtrl.squash(squashed_inst,squashedSeqNum[tid]);
+}
+
+void 
+InstructionQueue::replayCustom(int* archCtrlVec,bool done)
+{
+    // if(!done)
+    // {
+        DPRINTF(IQ, "replayed cctrl\n");
+        cusCtrl.setCtrlVec(archCtrlVec);
+    //  cusCtrl.replaying=true;
+    // }
+    // else
+    // {
+    //     cusCtrl.replaying=false;
+    // }
+}
+
 void
 InstructionQueue::insert(const DynInstPtr &new_inst)
 {
@@ -1000,16 +1021,20 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
         while (cus_it != cusCtrl.notRdyInstList[tid].end() ) {
             if ((*cus_it)->isSquashed())
             { 
-                ++cus_it;
+                ListIt next_it = cus_it;
+                ++next_it; // 获取下一个有效的迭代器
+                cus_it = cusCtrl.notRdyInstList[tid].erase(cus_it);
+                cus_it = next_it; // 更新迭代器
                 continue;
             }
             DPRINTF(IQ, "PC %s [sn:%llu].\n",(*cus_it)->pcState(), (*cus_it)->seqNum);
             bool canIss=cusCtrl.checkCanIss((*cus_it));
             if(canIss)
             {
+                assert(completed_inst->seqNum < (*cus_it)->seqNum );
                 (*cus_it)->setCusReady();
                 addIfReady((*cus_it));
-                                    ListIt next_it = cus_it;
+                    ListIt next_it = cus_it;
                     ++next_it; // 获取下一个有效的迭代器
                     dependents++;
                     cus_it = cusCtrl.notRdyInstList[tid].erase(cus_it);
@@ -1278,13 +1303,7 @@ InstructionQueue::doSquash(ThreadID tid)
 
             DPRINTF(IQ, "[tid:%i] Instruction [sn:%llu] PC %s squashed.\n",
                     tid, squashed_inst->seqNum, squashed_inst->pcState());
-
-            if (squashed_inst->isCustom() && squashed_inst->readyCustom())
-            {
-                cusCtrl.squash(squashed_inst);
-            }
-            
-
+        
             bool is_acq_rel = squashed_inst->isFullMemBarrier() &&
                          (squashed_inst->isLoad() ||
                           (squashed_inst->isStore() &&
