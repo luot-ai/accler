@@ -151,6 +151,7 @@ class DynInst : public ExecContext, public RefCounted
         ResultReady,             /// Instruction has its result
         CanIssue,                /// Instruction can issue and execute
         customReady,             /// custom Instruction issue condition
+        customDone,              /// custom Instruction change ctrlvec
         Issued,                  /// Instruction has issued
         Executed,                /// Instruction has executed
         CanCommit,               /// Instruction can commit
@@ -760,6 +761,9 @@ class DynInst : public ExecContext, public RefCounted
     /** Sets this instruction as ready to issue. */
     void setCanIssue() { status.set(CanIssue); }
     void setCusReady() { status.set(customReady); }
+    
+    void setCusDone()  { status.set(customDone); }
+    bool isCusDone()   const { return status[customDone];}
 
     /** Returns whether or not this instruction is ready to issue. */
     bool readyToIssue() const 
