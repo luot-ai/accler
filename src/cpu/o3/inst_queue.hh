@@ -272,6 +272,9 @@ class InstructionQueue
      */
     void squash(ThreadID tid);
 
+    void squashCustom(const DynInstPtr &squashed_inst,ThreadID tid);
+    void replayCustom(int* archCtrlVec,bool done);
+
     /** Returns the number of used entries for a thread. */
     unsigned getCount(ThreadID tid) { return count[tid]; };
 

@@ -55,7 +55,7 @@
 #include "cpu/timebuf.hh"
 #include "enums/CommitPolicy.hh"
 #include "sim/probe/probe.hh"
-
+#include "cpu/o3/cuscon.hh"
 namespace gem5
 {
 
@@ -129,6 +129,7 @@ class Commit
 
     /** Mark the thread as processing a trap. */
     void processTrapEvent(ThreadID tid);
+    CustomControl cusCtrl;
 
   public:
     /** Construct a Commit with the given parameters. */

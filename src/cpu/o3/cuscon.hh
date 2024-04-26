@@ -26,6 +26,8 @@ class CustomControl
     public:
         CustomControl();
         ~CustomControl();
+        void setCtrlVec(int* ctrlV);
+        int* getCtrlVec();
         int* getInfo(const DynInstPtr &inst);
         int  numOfIdx(int* info);
         bool ckVal(RegIndex idx,int val);
@@ -36,9 +38,11 @@ class CustomControl
         bool ckInfo(int* info,const DynInstPtr &inst);
         bool checkCanIss(const DynInstPtr &inst);
         void doneInsts(const DynInstPtr &completed_inst);
-        void squash(const DynInstPtr &inst);
+        void cmtInsts(const DynInstPtr &completed_inst);
+        void squash(const DynInstPtr &squashed_inst,InstSeqNum squash_seq);
         std::list<DynInstPtr> notRdyInstList[MaxThreads];
         std::list<DynInstPtr> notRdyLdKernelList[MaxThreads];
+        bool replaying;
 };
 
 } // namespace o3
