@@ -607,7 +607,7 @@ Commit::tick()
                         " insts this cycle.\n", tid);
                 rob->doSquash(tid);
                 toIEW->commitInfo[tid].robSquashing = true;
-                wroteToTimeBuffer = true;
+                wroteToTimeBuffer = true;                
             }
         }
     }
@@ -956,6 +956,17 @@ Commit::commitInsts()
             DPRINTF(Commit, "Retiring squashed instruction from "
                     "ROB.\n");
 
+            if(head_inst->isCustom())
+            {   
+                iewStage->instQueue.squashCustom(head_inst,tid);
+                if (head_inst->isCusDone())
+                {
+                    int* archCtrlVec = cusCtrl.getCtrlVec();
+                    iewStage->instQueue.replayCustom(archCtrlVec,true);
+                    delete[] archCtrlVec;
+                }
+            }
+
             rob->retireHead(commit_thread);
 
             ++stats.commitSquashedInsts;
@@ -1257,6 +1268,12 @@ Commit::commitHead(const DynInstPtr &head_inst, unsigned inst_num)
         renameMap[tid]->setEntry(head_inst->flattenedDestIdx(i),
                                  head_inst->renamedDestIdx(i));
     }
+
+    if(head_inst->isCustom())
+    {
+        cusCtrl.cmtInsts(head_inst);
+    }
+
 
     // hardware transactional memory
     // the HTM UID is purely for correctness and debugging purposes
