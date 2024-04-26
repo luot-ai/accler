@@ -53,7 +53,7 @@ namespace o3
 {
 
 CustomControl::CustomControl() 
-    : controlVec(TOTALVEC, 0), busyVec(TOTALIST, false) ,ldBusyVec(TOTALVEC, false)
+    : controlVec(TOTALVEC, 0), busyVec(TOTALIST, false) ,ldBusyVec(TOTALVEC, false),replaying(false)
 {    
     for (int i = 0; i < MaxThreads; ++i) 
     {
@@ -65,6 +65,26 @@ CustomControl::CustomControl()
 CustomControl::~CustomControl() 
 {
     //这里不需要做任何事情，因为向量是自动管理内存的
+}
+
+void 
+CustomControl::setCtrlVec(int* ctrlV)
+{
+    for (int i=0;i<TOTALVEC;i++)
+    {
+        setVal(i,ctrlV[i]);
+    }
+}
+
+int* 
+CustomControl::getCtrlVec()
+{
+    int* re = new int[TOTALVEC];
+    for (int i=0;i<TOTALVEC;i++)
+    {
+        re[i]=controlVec[i];
+    }
+    return re;
 }
 
 /*
@@ -183,7 +203,7 @@ CustomControl::ckVal(RegIndex idx,int val)
 void
 CustomControl::setVal(RegIndex idx,int val)
 {
-    DPRINTF(IQ, "set custom ctrlVec %i to val %i\n", idx,val);
+    DPRINTF(IQ, "set custom ctrlVec %i from %i to val %i\n", idx,controlVec[idx],val);
     controlVec[idx]=val;
 }
 
@@ -358,6 +378,7 @@ void
 CustomControl::doneInsts(const DynInstPtr &completed_inst)
 {
     assert(completed_inst->isCustom());
+    completed_inst->setCusDone();
     int* info = getInfo(completed_inst);
     setBusyVec(info[IST],info[IDX1],false);
     ThreadID tid = completed_inst->threadNumber;
@@ -394,12 +415,51 @@ CustomControl::doneInsts(const DynInstPtr &completed_inst)
     delete[] info;
 }
 
-void 
-CustomControl::squash(const DynInstPtr &inst)
+void
+CustomControl::cmtInsts(const DynInstPtr &completed_inst)
 {
-    int* info = getInfo(inst);
-    assert (!instNotBusy(info[IST],info[IDX1]));
-    setBusyVec(info[IST],info[IDX1],false);
+    assert(completed_inst->isCustom());
+    int* info = getInfo(completed_inst);
+    ThreadID tid = completed_inst->threadNumber;
+    if(info[IST]==OACC)
+    {
+        setVal(0,EMPTY);
+        setVal(1,EMPTY);
+        setVal(2,EMPTY);
+        setVal(3,EMPTY);
+        setVal(TMPA,EMPTY);
+        setVal(TMPB,EMPTY);
+        setVal(OUTVEC,WBVAL);
+    }
+    else
+    {
+        int doneVal = info[DONEVAL];
+        if(info[IST]==AAMUL1221)
+        {
+            setVal(TMPA,doneVal);
+            setVal(TMPB,doneVal);
+        }
+        else setVal(info[IDX1],doneVal);//ld,aamul02,aamul31,triadd,wb
+    }
+    delete[] info;
+}
+
+void 
+CustomControl::squash(const DynInstPtr &squashed_inst,InstSeqNum squashSeq)
+{
+    int* info = getInfo(squashed_inst);
+    //busyvec:lay low
+    if (!squashed_inst->isIssued() ||
+        (squashed_inst->isMemRef() &&
+         !squashed_inst->memOpDone())) 
+    {
+        if (squashed_inst->readyCustom())
+        {
+            assert (!instNotBusy(info[IST],info[IDX1]));
+            setBusyVec(info[IST],info[IDX1],false);
+        }
+    }
+    delete[] info;
 }
 
 } // namespace o3
