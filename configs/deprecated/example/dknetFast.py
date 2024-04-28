@@ -170,6 +170,12 @@ args = parser.parse_args()
 # multiprocesses = []
 numThreads = 1
 
+    # "detect",
+    # "/gem5/darknet/cfg/yolov3-tiny.cfg", 
+    # "/gem5/darknet/weights/yolov3-tiny.weights",
+    # "/gem5/darknet/data/dog.jpg",
+
+
 darknet = Process(pid=500)
 darknet.executable = args.testbench
 darknet.cmd = [darknet.executable] + [
