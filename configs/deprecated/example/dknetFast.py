@@ -175,14 +175,17 @@ numThreads = 1
     # "/gem5/darknet/weights/yolov3-tiny.weights",
     # "/gem5/darknet/data/dog.jpg",
 
+    # "classify",
+    # "/gem5/darknet/cfg/tiny.cfg", 
+    # "/gem5/darknet/weights/tiny.weights",
+    # "/gem5/darknet/data/dog.jpg",
 
 darknet = Process(pid=500)
 darknet.executable = args.testbench
 darknet.cmd = [darknet.executable] + [
-    "classify",
-    "/gem5/darknet/cfg/tiny.cfg", 
-    "/gem5/darknet/weights/tiny.weights",
-    "/gem5/darknet/data/dog.jpg",
+    args.mode,
+    args.inputFeature,
+    args.weight,
 ]
 if args.benchmark_stdout:
     darknet.output = args.benchmark_stdout

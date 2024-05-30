@@ -13,6 +13,9 @@ OUTPUT_DIR=$DNET_DIR/output
 SCRIPT_OUT=$OUTPUT_DIR/runscript.log                                                                    # File log for this script's stdout henceforth
 RUNMODE=$1
 TESTBENCH=$2
+SIZE=$3
+IFC=$4
+KC=$5
 ################## REPORT SCRIPT CONFIGURATION ###################
 
 echo "Command line:"                                | tee $SCRIPT_OUT
@@ -63,9 +66,8 @@ $GEM5_DIR/build/RISCV/gem5.opt \
 $GEM5_DIR/configs/deprecated/example/dknet.py \
 $BOOM_FLAGS \
 --testbench=$TESTBENCH \
---mode='detect' \
---netConfig=$CFG_DIR/yolov3-spp.cfg \
---weight=$WEIGHT_DIR/yolov3-spp.weights \
---inputFeature=$DATA_DIR/dog.jpg \
+--mode=$SIZE \
+--inputFeature=$IFC \
+--weight=$KC \
 --benchmark_stdout=$TESTBENCH.out \
 --benchmark_stderr=$TESTBENCH.err  | tee -a $SCRIPT_OUT
