@@ -59,7 +59,8 @@ if env['CONF']['BUILD_ISA']:
     Source('pipeline.cc')
     Source('scoreboard.cc')
     Source('stats.cc')
-
+    Source('cuscon.cc')
+    
     DebugFlag('MinorCPU', 'Minor CPU-level events')
     DebugFlag('MinorExecute', 'Minor Execute stage')
     DebugFlag('MinorInterrupt', 'Minor interrupt handling')
