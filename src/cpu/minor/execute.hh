@@ -55,6 +55,7 @@
 #include "cpu/minor/lsq.hh"
 #include "cpu/minor/pipe_data.hh"
 #include "cpu/minor/scoreboard.hh"
+#include "cpu/minor/cuscon.hh"
 
 namespace gem5
 {
@@ -123,6 +124,8 @@ class Execute : public Named
 
     /** Scoreboard of instruction dependencies */
     std::vector<Scoreboard> scoreboard;
+
+    CustomControl cusCtrl;
 
     /** The execution functional units */
     std::vector<FUPipeline *> funcUnits;

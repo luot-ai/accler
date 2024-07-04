@@ -677,7 +677,12 @@ Execute::issue(ThreadID thread_id)
                     {
                         DPRINTF(MinorExecute, "Can't issue inst: %s yet\n",
                             *inst);
-                    } else {
+                    } else if (inst->isCustom() && !cusCtrl.checkCanIss(inst) )
+                    {
+                        DPRINTF(MinorExecute, "Can't issue custom inst: %s yet\n",
+                            *inst);
+                    } 
+                    else {
                         /* Can insert the instruction into this FU */
                         DPRINTF(MinorExecute, "Issuing inst: %s"
                             " into FU %d\n", *inst,
@@ -1376,6 +1381,10 @@ Execute::commit(ThreadID thread_id, bool only_commit_microops, bool discard,
             }
 
             scoreboard[thread_id].clearInstDests(inst, inst->isMemRef());
+            if(inst->isCustom())
+            {
+                cusCtrl.doneInsts(inst);
+            }
         }
 
         /* Handle per-cycle instruction counting */
