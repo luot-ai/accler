@@ -1236,6 +1236,14 @@ decode QUADRANT default Unknown::unknown() {
             }
         }
 
+        0x0a: decode FUNCT7 {
+            0x2: MAXF::maxf(
+                {{srcidx =(RegIndex)sext<5>(RS1);}},
+                {{
+                    CV_tmp1[i]=CV_src1[i]-CV_src2[i];
+                }},AAMulOp,IsAAMul02);
+        }
+
         0x0b: decode FUNCT3 {
             0x2: decode AMOFUNCT {
                 0x2: LoadReserved::lr_w({{

@@ -150,6 +150,13 @@ class MinorFUPool(SimObject):
 
     funcUnits = VectorParam.MinorFU("functional units")
 
+class MinorDefaultAAMULFU(MinorFU):
+    opClasses = minorMakeOpClassSet(["AAMul"])
+    opLat = 4
+
+class MinorDefaultTOFU(MinorFU):
+    opClasses = minorMakeOpClassSet(["TriAdd","Oacc",])
+    opLat = 2
 
 class MinorDefaultIntFU(MinorFU):
     opClasses = minorMakeOpClassSet(["IntAlu"])
@@ -287,6 +294,8 @@ class MinorDefaultFUPool(MinorFUPool):
         MinorDefaultMemFU(),
         MinorDefaultMiscFU(),
         MinorDefaultVecFU(),
+        MinorDefaultAAMULFU(),
+        MinorDefaultTOFU(),
     ]
 
 
@@ -335,7 +344,7 @@ class BaseMinorCPU(BaseCPU):
     )
 
     fetch2InputBufferSize = Param.Unsigned(
-        2, "Size of input buffer to Fetch2 in cycles-worth of insts."
+        1, "Size of input buffer to Fetch2 in cycles-worth of insts."
     )
     fetch2ToDecodeForwardDelay = Param.Cycles(
         1, "Forward cycle delay from Fetch2 to Decode (1 means next cycle)"
@@ -347,13 +356,13 @@ class BaseMinorCPU(BaseCPU):
     )
 
     decodeInputBufferSize = Param.Unsigned(
-        3, "Size of input buffer to Decode in cycles-worth of insts."
+        1, "Size of input buffer to Decode in cycles-worth of insts."
     )
     decodeToExecuteForwardDelay = Param.Cycles(
         1, "Forward cycle delay from Decode to Execute (1 means next cycle)"
     )
     decodeInputWidth = Param.Unsigned(
-        2,
+        1,
         "Width (in instructions) of input to Decode (and implicitly"
         " Decode's own width)",
     )
@@ -364,7 +373,7 @@ class BaseMinorCPU(BaseCPU):
     )
 
     executeInputWidth = Param.Unsigned(
-        2, "Width (in instructions) of input to Execute"
+        1, "Width (in instructions) of input to Execute"
     )
     executeCycleInput = Param.Bool(
         True,
@@ -372,13 +381,13 @@ class BaseMinorCPU(BaseCPU):
         " each cycle",
     )
     executeIssueLimit = Param.Unsigned(
-        2, "Number of issuable instructions in Execute each cycle"
+        1, "Number of issuable instructions in Execute each cycle"
     )
     executeMemoryIssueLimit = Param.Unsigned(
         1, "Number of issuable memory instructions in Execute each cycle"
     )
     executeCommitLimit = Param.Unsigned(
-        2, "Number of committable instructions in Execute each cycle"
+        1, "Number of committable instructions in Execute each cycle"
     )
     executeMemoryCommitLimit = Param.Unsigned(
         1, "Number of committable memory references in Execute each cycle"
@@ -424,7 +433,7 @@ class BaseMinorCPU(BaseCPU):
     )
 
     executeAllowEarlyMemoryIssue = Param.Bool(
-        True,
+        False,
         "Allow mem refs to be issued to the LSQ before reaching the head of"
         " the in flight insts queue",
     )

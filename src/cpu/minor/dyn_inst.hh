@@ -258,6 +258,22 @@ class MinorDynInst : public RefCounted
     /** Is this a real mem ref instruction */
     bool isMemRef() const { return isInst() && staticInst->isMemRef(); }
 
+    bool isAAMul02()        const { return staticInst->isAAMul02(); }  
+    bool isAAMul12()        const { return staticInst->isAAMul12(); }
+    bool isAAMul21()        const { return staticInst->isAAMul21(); }
+    bool isAAMul31()        const { return staticInst->isAAMul31(); }
+    bool isAAMul1221()      const { return staticInst->isAAMul1221(); }
+    bool isTriAdd012()      const { return staticInst->isTriAdd012(); }
+    bool isTriAdd321()      const { return staticInst->isTriAdd321(); }
+
+    bool isOacc()           const { return staticInst->isOacc(); }
+    bool isVLoad()          const { return staticInst->isVLoad(); }
+    bool isVStore()         const { return staticInst->isVStore(); }   
+    bool isAAMul()          const { return staticInst->isAAMul(); }
+    bool isTriAdd()         const { return staticInst->isTriAdd(); }
+    bool isCustom() const { return isInst() && staticInst->isCustom(); }
+    RegIndex cDestIdx() const { return staticInst->destCIdx(); }
+
     /** Is this an instruction that can be executed `for free' and
      *  needn't spend time in an FU */
     bool isNoCostInst() const;
