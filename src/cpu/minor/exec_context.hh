@@ -146,15 +146,13 @@ class ExecContext : public gem5::ExecContext
     CRegVal
     getCRegOperand(const StaticInst *si, RegIndex idx) override
     {
-        CRegVal re= {} ;
-        return re;
+        return thread.getCReg(idx);
     }
 
     void 
     setCRegOperand(const StaticInst *si, RegIndex idx, CRegVal val) override
     {
-        return;
-        //setResult(gem5::RiscvISA::cRegClass, val);
+        thread.setCReg(idx,val);
     }
 
     RegVal

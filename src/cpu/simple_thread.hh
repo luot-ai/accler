@@ -96,6 +96,7 @@ class SimpleThread : public ThreadState, public ThreadContext
     typedef ThreadContext::Status Status;
 
   protected:
+    CRegFile customRegFile;
     std::array<RegFile, CCRegClass + 1> regFiles;
 
     BaseISA *const isa;    // one "instance" of the current ISA.
@@ -309,6 +310,16 @@ class SimpleThread : public ThreadState, public ThreadContext
         storeCondFailures = sc_failures;
     }
 
+    CRegVal
+    getCReg(RegIndex idx) 
+    {
+        CRegVal val = customRegFile.reg(idx);
+        const auto &reg_file = regFiles[0];
+        const auto &reg_class = reg_file.regClass;
+        DPRINTFV(reg_class.debug(),"Custom regfile:get register %i ,val is: %f,%f,%f,%f:\n",idx, val[0],val[1],val[2],val[3]);
+        return val;
+    }
+
     RegVal
     getReg(const RegId &arch_reg) const override
     {
@@ -349,6 +360,15 @@ class SimpleThread : public ThreadState, public ThreadContext
         auto &reg_file = regFiles[reg.classValue()];
 
         return reg_file.ptr(idx);
+    }
+
+    void 
+    setCReg(RegIndex idx,CRegVal val)
+    {
+      customRegFile.reg(idx)= val;
+      const auto &reg_file = regFiles[0];
+        const auto &reg_class = reg_file.regClass;
+        DPRINTFV(reg_class.debug(),"Custom regfile:setting custom register %i to %f,%f,%f,%f:\n",idx, val[0],val[1],val[2],val[3]);
     }
 
     void

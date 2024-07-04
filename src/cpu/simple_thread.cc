@@ -78,6 +78,7 @@ SimpleThread::SimpleThread(BaseCPU *_cpu, int _thread_num, System *_sys,
           {*_isa->regClasses().at(MatRegClass)},
           {*_isa->regClasses().at(CCRegClass)}
       }},
+      customRegFile(*_isa->regClasses().at(CRegClass),11),
       isa(_isa),
       predicate(true), memAccPredicate(true),
       comInstEventQueue("instruction-based event queue"),
