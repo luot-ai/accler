@@ -44,12 +44,12 @@ if [ "$RUNMODE" = "e" ]; then
 }
 else
 {
-    DEBUGFLAGS="O3CPUAll"
+    DEBUGFLAGS="IntRegs"
     TRACEOUT="trace.out"
 }
 fi
 
-BOOM_FLAGS="--cpu-type=RiscvO3CPU \
+BOOM_FLAGS="--cpu-type=RiscvMinorCPU \
 --bp-type=BiModeBP \
 --caches \
 --l2cache \
@@ -63,7 +63,7 @@ BOOM_FLAGS="--cpu-type=RiscvO3CPU \
 --l2_assoc=4 \
 --mem-size=8GB \
 --warmup-insts=10000000 \
--m 88498000 \
+-m 323560500 \
 -I 100000000000 "
 
 
@@ -73,7 +73,7 @@ $GEM5_DIR/build/RISCV/gem5.opt \
 --outdir=$OUTPUT_DIR \
 --debug-flags=$DEBUGFLAGS \
 --debug-file=$TRACEOUT \
---debug-start=87498000 \
+--debug-start=323473000 \
 $GEM5_DIR/configs/deprecated/example/dknet.py \
 $BOOM_FLAGS \
 --testbench=$TESTBENCH \

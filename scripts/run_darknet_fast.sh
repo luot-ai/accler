@@ -42,7 +42,7 @@ echo "" | tee -a $SCRIPT_OUT
 echo "" | tee -a $SCRIPT_OUT
 
 
-BOOM_FLAGS="--cpu-type=RiscvO3CPU \
+BOOM_FLAGS="--cpu-type=RiscvMinorCPU \
 --bp-type=BiModeBP \
 --caches \
 --l2cache \

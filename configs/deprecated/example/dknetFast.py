@@ -180,12 +180,26 @@ numThreads = 1
     # "/gem5/darknet/weights/tiny.weights",
     # "/gem5/darknet/data/dog.jpg",
 
+    # "classify",
+    # "/gem5/darknet/cfg/resnet18.cfg", 
+    # "/gem5/darknet/weights/resnet18.weights",
+    # "/gem5/darknet/data/dog.jpg",
+
+    # "classify",
+    # "/gem5/darknet/cfg/vgg-16.cfg", 
+    # "/gem5/darknet/weights/vgg16.weights",
+    # "/gem5/darknet/data/dog.jpg",
+
+    # args.mode,
+    # args.inputFeature,
+    # args.weight,
 darknet = Process(pid=500)
 darknet.executable = args.testbench
 darknet.cmd = [darknet.executable] + [
-    args.mode,
-    args.inputFeature,
-    args.weight,
+    "classify",
+    "/gem5/darknet/cfg/resnet18.cfg", 
+    "/gem5/darknet/weights/resnet18.weights",
+    "/gem5/darknet/data/dog.jpg",
 ]
 if args.benchmark_stdout:
     darknet.output = args.benchmark_stdout
