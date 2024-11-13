@@ -433,7 +433,7 @@ class BaseMinorCPU(BaseCPU):
     )
 
     executeAllowEarlyMemoryIssue = Param.Bool(
-        False,
+        True,
         "Allow mem refs to be issued to the LSQ before reaching the head of"
         " the in flight insts queue",
     )

@@ -44,7 +44,7 @@ if [ "$RUNMODE" = "e" ]; then
 }
 else
 {
-    DEBUGFLAGS="IntRegs"
+    DEBUGFLAGS="MinorExecute"
     TRACEOUT="trace.out"
 }
 fi
@@ -61,9 +61,9 @@ BOOM_FLAGS="--cpu-type=RiscvMinorCPU \
 --l1d_assoc=4 \
 --l2_size=256kB \
 --l2_assoc=4 \
---mem-size=8GB \
+--mem-size=16GB \
 --warmup-insts=10000000 \
--m 323560500 \
+-m 226832000 \
 -I 100000000000 "
 
 
@@ -73,7 +73,7 @@ $GEM5_DIR/build/RISCV/gem5.opt \
 --outdir=$OUTPUT_DIR \
 --debug-flags=$DEBUGFLAGS \
 --debug-file=$TRACEOUT \
---debug-start=323473000 \
+--debug-start=226654000 \
 $GEM5_DIR/configs/deprecated/example/dknet.py \
 $BOOM_FLAGS \
 --testbench=$TESTBENCH \
