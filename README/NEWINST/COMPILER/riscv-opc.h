@@ -62,7 +62,7 @@
 #define MASK_SETQ  0xfe00707f
 #define MATCH_ADDQ 0x10000037
 #define MASK_ADDQ  0xfe00707f
-#define MATCH_SUBQ 0x50000037
+#define MATCH_SUBQ 0xd0000037
 #define MASK_SUBQ  0xfe00707f
 #define MATCH_MULQ 0x14000037
 #define MASK_MULQ  0xfe00707f
