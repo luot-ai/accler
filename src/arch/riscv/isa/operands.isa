@@ -59,7 +59,6 @@ let {{
 
 def operands {{
 #General Purpose Integer Reg Operands
-    'Rq': ModRegOP('ud', '0', 'IsInteger', 1),
 
     'Rd': IntReg('ud', 'RD', 'IsInteger', 1),
     'Rs1': IntReg('ud', 'RS1', 'IsInteger', 2),

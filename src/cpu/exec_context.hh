@@ -81,6 +81,9 @@ class ExecContext
     virtual void setRegOperand(const StaticInst *si, int idx,
             const void *val) = 0;
 
+    virtual RegVal readModReg(int idx) = 0;
+    virtual void setModReg(int idx, RegVal val) = 0;
+
     /**
      * @{
      * @name Misc Register Interfaces

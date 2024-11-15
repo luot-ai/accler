@@ -172,7 +172,16 @@ class CheckerCPU : public BaseCPU, public ExecContext
     // long as these methods don't copy the pointer into any long-term
     // storage (which is pretty hard to imagine they would have reason
     // to do).
-    
+    RegVal readModReg(int idx) override
+    {
+        return 0;
+    }
+
+    void setModReg(int idx, RegVal val) override
+    {
+        return;
+    }
+
     CRegVal
     getCRegOperand(const StaticInst *si, RegIndex idx) override
     {

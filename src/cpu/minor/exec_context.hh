@@ -149,6 +149,16 @@ class ExecContext : public gem5::ExecContext
         return thread.getCReg(idx);
     }
 
+    RegVal readModReg(int idx) override
+    {
+        return thread.readModReg(idx);   
+    }
+
+    void setModReg(int idx, RegVal val) override 
+    {
+        thread.setModReg(idx,val);
+    }
+
     void 
     setCRegOperand(const StaticInst *si, RegIndex idx, CRegVal val) override
     {

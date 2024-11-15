@@ -54,6 +54,7 @@
 #include "cpu/regfile.hh"
 #include "cpu/thread_context.hh"
 #include "cpu/thread_state.hh"
+#include "arch/riscv/regs/mod.hh"
 #include "debug/CCRegs.hh"
 #include "debug/FloatRegs.hh"
 #include "debug/IntRegs.hh"
@@ -272,6 +273,18 @@ class SimpleThread : public ThreadState, public ThreadContext
         return isa->readMiscRegNoEffect(misc_reg);
     }
 
+    RegVal readModReg(int idx) 
+    {
+        const auto &reg_file = regFiles[0];
+        //const auto &reg_class = reg_file.regClass;
+
+        RegVal val = reg_file.reg(idx);
+        // DPRINTFV(reg_class.debug(), "Reading %s reg %s (%d) as %#x.\n",
+        //         reg.className(), reg_class.regName(arch_reg), idx, val);
+        
+        return val;
+    }
+
     RegVal
     readMiscReg(RegIndex misc_reg) override
     {
@@ -282,6 +295,12 @@ class SimpleThread : public ThreadState, public ThreadContext
     setMiscRegNoEffect(RegIndex misc_reg, RegVal val) override
     {
         return isa->setMiscRegNoEffect(misc_reg, val);
+    }
+
+    void setModReg(int idx, RegVal val) 
+    {
+        auto &reg_file = regFiles[0];
+        reg_file.reg(idx) = val;
     }
 
     void

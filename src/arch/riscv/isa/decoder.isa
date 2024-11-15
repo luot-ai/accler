@@ -1412,8 +1412,26 @@ decode QUADRANT default Unknown::unknown() {
                                 Rd_sw = _rvk_emu_sha512sum0r(Rs1_sw, Rs2_sw);
                             }});
                         }
+                        0x0: addq({{
+                            uint64_t Rq;
+                            Rq = xc->readModReg(0);
+                            Rd = rem<int32_t>(rvSext(Rs1_sd + Rs2_sd),Rq);
+                        }});
+                        0x3: subq({{
+                            uint64_t Rq;
+                            Rq = xc->readModReg(0);
+                            Rd = rem<int32_t>(rvSext(Rs1_sd - Rs2_sd),Rq);
+                        }});
+                        0x2: setq({{
+                            xc->setModReg(0,Rs1_sd);
+                        }});
                     }
                     0x09: decode BS {
+                        0x0: mulq({{
+                            uint64_t Rq;
+                            Rq = xc->readModReg(0);
+                            Rd = rem<int32_t>(rvSext(Rs1_sd * Rs2_sd),Rq);
+                        }});
                         0x1: decode RVTYPE {
                             0x0: sha512sum1r({{
                                 Rd_sw = _rvk_emu_sha512sum1r(Rs1_sw, Rs2_sw);

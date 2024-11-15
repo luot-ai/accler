@@ -1150,6 +1150,16 @@ class DynInst : public ExecContext, public RefCounted
         return cpu->getReg(reg, threadNumber);
     }
 
+    RegVal readModReg(int idx) override
+    {
+        return 0;
+    }
+
+    void setModReg(int idx, RegVal val) override
+    {
+        return;
+    }
+
     CRegVal
     getCRegOperand(const StaticInst *si, RegIndex idx) override
     {

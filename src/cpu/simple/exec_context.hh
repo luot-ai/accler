@@ -222,6 +222,16 @@ class SimpleExecContext : public ExecContext
         thread->setReg(reg, val);
     }
     
+    RegVal readModReg(int idx) override
+    {
+        return 0;
+    }
+
+    void setModReg(int idx, RegVal val) override
+    {
+        return;
+    }
+
     CRegVal
     getCRegOperand(const StaticInst *si, RegIndex idx) override
     {
