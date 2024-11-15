@@ -70,6 +70,7 @@ SimpleThread::SimpleThread(BaseCPU *_cpu, int _thread_num, System *_sys,
                            BaseISA *_isa, InstDecoder *_decoder)
     : ThreadState(_cpu, _thread_num, _process),
       regFiles{{
+            {*_isa->regClasses().at(ModRegClass)},
           {*_isa->regClasses().at(IntRegClass)},
           {*_isa->regClasses().at(FloatRegClass)},
           {*_isa->regClasses().at(VecRegClass)},

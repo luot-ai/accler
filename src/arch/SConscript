@@ -224,6 +224,7 @@ def ISADesc(desc, decoder_splits=1, exec_splits=1, tags=None, add_tags=None):
 
 Export('ISADesc')
 
+DebugFlag('ModRegs')
 DebugFlag('IntRegs')
 DebugFlag('FloatRegs')
 DebugFlag('VecRegs')
@@ -232,7 +233,7 @@ DebugFlag('MatRegs')
 DebugFlag('CCRegs')
 DebugFlag('CustomRegs')
 DebugFlag('MiscRegs')
-CompoundFlag('Registers', [ 'IntRegs', 'FloatRegs', 'VecRegs', 'VecPredRegs',
+CompoundFlag('Registers', [ 'ModRegs','IntRegs', 'FloatRegs', 'VecRegs', 'VecPredRegs',
                             'MatRegs', 'CCRegs', 'MiscRegs' ])
 
 DebugFlag('Decoder', "Decoder debug output")

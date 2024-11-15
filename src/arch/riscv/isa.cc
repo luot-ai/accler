@@ -47,6 +47,7 @@
 #include "arch/riscv/regs/misc.hh"
 #include "arch/riscv/regs/vector.hh"
 #include "arch/riscv/regs/custom.hh"
+#include "arch/riscv/regs/mod.hh"
 #include "base/bitfield.hh"
 #include "base/compiler.hh"
 #include "base/logging.hh"
@@ -260,6 +261,7 @@ ISA::ISA(const Params &p) : BaseISA(p),
     enableRvv(p.enable_rvv), vlen(p.vlen), elen(p.elen),
     _privilegeModeSet(p.privilege_mode_set)
 {
+    _regClasses.push_back(&modRegClass);
     _regClasses.push_back(&intRegClass);
     _regClasses.push_back(&floatRegClass);
     _regClasses.push_back(&vecRegClass);

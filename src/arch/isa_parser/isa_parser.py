@@ -563,6 +563,7 @@ class ISAParser(Grammar):
             {
                 "overrideInOperand": overrideInOperand,
                 "IntRegOp": IntRegOperandDesc,
+                "ModRegOP": ModRegOperandDesc,
                 "FloatRegOp": FloatRegOperandDesc,
                 "CCRegOp": CCRegOperandDesc,
                 "VecElemOp": VecElemOperandDesc,
