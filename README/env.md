@@ -10,6 +10,13 @@
   * docker load -i gem5.tar
   * docker image ls
   * docker run -it -v 放置gem5代码的路径:/gem5 映像文件名
+* commit
+  * commit有个命令，可以在容器里先删一些大文件
+    * 我删了build 和 rv-tool-chain的.git
+* 上传
+  * podman login docker.io
+  * podman tag gem5_rvtool:v1 amn0428/gem5_rvtool:v1
+  * podman push amn0428/gem5_rvtool:v1
 
 ## Gem5文档下啥都有
 
@@ -25,4 +32,3 @@
 ### Gem5 API
 
 * stdlib大概就是用于构建Gem5的较复杂功能集，API就是提供的一些简单的小函数吧
-
