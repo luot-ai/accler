@@ -44,7 +44,7 @@ if [ "$RUNMODE" = "e" ]; then
 }
 else
 {
-    DEBUGFLAGS="IntRegs"
+    DEBUGFLAGS="Registers"
     TRACEOUT="trace.out"
 }
 fi
