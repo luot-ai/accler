@@ -123,6 +123,10 @@ class OpClass(Enum):
         "AAMul1221",
         "TriAdd",
         "Oacc",
+        "Setq",
+        "Addq",
+        "Subq",
+        "Mulq",
     ]
 
 

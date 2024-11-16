@@ -159,13 +159,13 @@ class MinorDefaultTOFU(MinorFU):
     opLat = 2
 
 class MinorDefaultIntFU(MinorFU):
-    opClasses = minorMakeOpClassSet(["IntAlu"])
+    opClasses = minorMakeOpClassSet(["IntAlu","Setq","Addq","Subq"])
     timings = [MinorFUTiming(description="Int", srcRegsRelativeLats=[2])]
     opLat = 3
 
 
 class MinorDefaultIntMulFU(MinorFU):
-    opClasses = minorMakeOpClassSet(["IntMult"])
+    opClasses = minorMakeOpClassSet(["IntMult","Mulq"])
     timings = [MinorFUTiming(description="Mul", srcRegsRelativeLats=[0])]
     opLat = 3
 

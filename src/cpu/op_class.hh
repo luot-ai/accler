@@ -138,6 +138,10 @@ static const OpClass AAMulOp = enums::AAMul;
 static const OpClass AAMul1221Op = enums::AAMul1221;
 static const OpClass TriAddOp = enums::TriAdd;
 static const OpClass OaccOp = enums::Oacc;
+static const OpClass SetqOp = enums::Setq;
+static const OpClass AddqOp = enums::Addq;
+static const OpClass SubqOp = enums::Subq;
+static const OpClass MulqOp = enums::Mulq;
 static const OpClass Num_OpClasses = enums::Num_OpClass;
 
 } // namespace gem5
