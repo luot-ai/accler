@@ -159,13 +159,18 @@ class MinorDefaultTOFU(MinorFU):
     opLat = 2
 
 class MinorDefaultIntFU(MinorFU):
-    opClasses = minorMakeOpClassSet(["IntAlu","Setq","Addq","Subq"])
+    opClasses = minorMakeOpClassSet(["IntAlu","Setq",])
     timings = [MinorFUTiming(description="Int", srcRegsRelativeLats=[2])]
     opLat = 3
 
 
+class MinorDefaultModCalFU(MinorFU):
+    opClasses = minorMakeOpClassSet(["Addq","Subq","Mulq",])
+    timings = [MinorFUTiming(description="ModCal", srcRegsRelativeLats=[2])]
+    opLat = 6
+    
 class MinorDefaultIntMulFU(MinorFU):
-    opClasses = minorMakeOpClassSet(["IntMult","Mulq"])
+    opClasses = minorMakeOpClassSet(["IntMult",])
     timings = [MinorFUTiming(description="Mul", srcRegsRelativeLats=[0])]
     opLat = 3
 
@@ -296,6 +301,7 @@ class MinorDefaultFUPool(MinorFUPool):
         MinorDefaultVecFU(),
         MinorDefaultAAMULFU(),
         MinorDefaultTOFU(),
+        MinorDefaultModCalFU(),
     ]
 
 
@@ -433,7 +439,7 @@ class BaseMinorCPU(BaseCPU):
     )
 
     executeAllowEarlyMemoryIssue = Param.Bool(
-        True,
+        False,
         "Allow mem refs to be issued to the LSQ before reaching the head of"
         " the in flight insts queue",
     )
