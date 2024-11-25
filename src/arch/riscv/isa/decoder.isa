@@ -1413,24 +1413,42 @@ decode QUADRANT default Unknown::unknown() {
                             }});
                         }
                         0x0: addq({{
-                            uint64_t Rq;
+                            uint64_t Rq=0;
+                            uint64_t addres=0;
+                            addres = rvSext(Rs1_sd + Rs2_sd);
                             Rq = xc->readModReg(0);
-                            Rd = rem<int32_t>(rvSext(Rs1_sd + Rs2_sd),Rq);
+                            if (machInst.rv_type == RV32) {
+                                Rd_sd = rem<int32_t>(addres, Rq);
+                            } else {
+                                Rd_sd = rem<int64_t>(addres, Rq);
+                            }
                         }},AddqOp);
                         0x3: subq({{
-                            uint64_t Rq;
+                            uint64_t Rq=0;
+                            uint64_t subres=0;
+                            subres = rvSext(Rs1_sd - Rs2_sd);
                             Rq = xc->readModReg(0);
-                            Rd = rem<int32_t>(rvSext(Rs1_sd - Rs2_sd),Rq);
+                            if (machInst.rv_type == RV32) {
+                                Rd_sd = rem<int32_t>(subres, Rq);
+                            } else {
+                                Rd_sd = rem<int64_t>(subres, Rq);
+                            }
                         }},SubqOp);
                         0x2: setq({{
-                            xc->setModReg(0,Rs1_sd);
+                            xc->setModReg(0,Rs1);
                         }},SetqOp);
                     }
                     0x09: decode BS {
                         0x0: mulq({{
-                            uint64_t Rq;
+                            uint64_t Rq=0;
+                            uint64_t mulres=0;
+                            mulres = rvSext(Rs1_sd * Rs2_sd);
                             Rq = xc->readModReg(0);
-                            Rd = rem<int32_t>(rvSext(Rs1_sd * Rs2_sd),Rq);
+                            if (machInst.rv_type == RV32) {
+                                Rd_sd = rem<int32_t>(mulres, Rq);
+                            } else {
+                                Rd_sd = rem<int64_t>(mulres, Rq);
+                            }
                         }},MulqOp);
                         0x1: decode RVTYPE {
                             0x0: sha512sum1r({{
