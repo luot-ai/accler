@@ -63,7 +63,7 @@ BOOM_FLAGS="--cpu-type=RiscvMinorCPU \
 --l2_assoc=4 \
 --mem-size=16GB \
 --warmup-insts=10000000 \
--m 174820500 \
+-m 187045000 \
 -I 100000000000 "
 
 
@@ -73,7 +73,7 @@ $GEM5_DIR/build/RISCV/gem5.opt \
 --outdir=$OUTPUT_DIR \
 --debug-flags=$DEBUGFLAGS \
 --debug-file=$TRACEOUT \
---debug-start=171976000 \
+--debug-start=171801000 \
 $GEM5_DIR/configs/deprecated/example/dknet.py \
 $BOOM_FLAGS \
 --testbench=$TESTBENCH \
